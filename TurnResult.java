@@ -28,4 +28,7 @@ public class TurnResult {
     public int getPaidCustomerCount() {return paidCustomerCount;}
     public int getTableCount() {return tableCount;}
     public int walkedCustomerCount() {return walkedCustomerCount;}
+    
+    public int getRevenue() {return revenueCents;}
+    public double getAverageSatisfaction() {return averageSatisfaction;}
 }
