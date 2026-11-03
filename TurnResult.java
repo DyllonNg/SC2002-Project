@@ -1,12 +1,9 @@
-import java.util.List;
-import java.util.Queue;
-
 public class TurnResult {
 
     private int turn;
 
     private int queueCustomerCount;
-    protected int paidCustomerCount;
+    private int paidCustomerCount;
     private int tableCount;
     private int walkedCustomerCount;
 
@@ -14,27 +11,21 @@ public class TurnResult {
     private double averageSatisfaction;
 
     public TurnResult(GameState gameState) {
-        this.turn = getTurn(gameState);
-        this.queueCustomerCount = get
+        this.turn = gameState.getTurn();
+
+        this.queueCustomerCount = gameState.getQueueCustomerCount();
+        this.paidCustomerCount = gameState.getPaidCustomerCount();
+        this.tableCount = gameState.getTableCount();
+        this.walkedCustomerCount = gameState.getWalkedCustomerCount();
+
+        this.revenueCents = gameState.getRevenue();
+        this.averageSatisfaction = (double) gameState.getSatisfactionSum() / (paidCustomerCount + walkedCustomerCount);
     }
 
-    public int getpaidCustomerCount() {
-        return paidCustomerCount;
-    }
+    public int getTurn() {return turn;}
 
-    public int getUnhappyDepartures() {
-        return unhappyDepartures;
-    }
-
-    public int getRevenueCents() {
-        return revenueCents;
-    }
-
-    public double getAverageSatisfaction() {
-        return averageSatisfaction;
-    }
-
-    public int getTurn() {
-        return turn;
-    }
+    public int getQueueCustomerCount() {return queueCustomerCount;}
+    public int getPaidCustomerCount() {return paidCustomerCount;}
+    public int getTableCount() {return tableCount;}
+    public int walkedCustomerCount() {return walkedCustomerCount;}
 }

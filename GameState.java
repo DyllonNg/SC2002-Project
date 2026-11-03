@@ -41,14 +41,15 @@ public class GameState {
     public boolean addQueueCustomer(Customer customer) {return waitingQueue.offer(customer);}
     public Customer removeQueueCustomer() {return waitingQueue.poll();}
     public boolean removeQueueCustomer(Customer customer) {return waitingQueue.remove(customer);}
-    public int getWaitingCustomerCount() {return waitingQueue.size();}
+    public int getQueueCustomerCount() {return waitingQueue.size();}
 
     public void addTable(Table table) {tables.add(table);}
     public boolean removeTable(Table table) {return tables.remove(table);}
     public boolean removeTable(int tableId) {return tables.removeIf(table -> table.getTableId() == tableId);}
-    public int getTableCount() { return tables.size(); }
+    public int getTableCount() {return tables.size();}
 
     public boolean addWalkedCustomer(Customer customer) {return walkedCustomers.add(customer);}
+    public int getWalkedCustomerCount() {return walkedCustomers.size();}
 
     public void addPaidCustomer(Customer customer) {paidCustomers.add(customer);}
     public int getPaidCustomerCount() { return paidCustomers.size(); }
