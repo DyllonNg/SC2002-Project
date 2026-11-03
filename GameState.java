@@ -6,15 +6,17 @@ import java.util.ArrayList;
 
 public class GameState {
 
-    private int turn;
+    protected int turn;
 
-    private Queue<Customer> waitingQueue;
-    private List<Table> tables;
-    private List<Customer> paidCustomers;
-    private List<Customer> walkedCustomers;
+    protected Queue<Customer> waitingQueue;
+    protected List<Table> tables;
+    protected List<Customer> paidCustomers;
+    protected List<Customer> walkedCustomers;
 
-    private int revenueCents;
-    private int satisfactionSum;
+    protected List<Order> orders;
+
+    protected int revenueCents;
+    protected int satisfactionSum;
 
     public GameState() {
         this.turn = 0;
@@ -25,16 +27,6 @@ public class GameState {
         this.revenueCents = 0;
         this.satisfactionSum = 0;
     }
-
-    public int getTurn() {return turn;}
-
-    public Queue<Customer> getWaitingQueue() {return waitingQueue;}
-    public List<Table> getTables() {return tables;}
-    public List<Customer> getPaidCustomers() {return paidCustomers;}
-    public List<Customer> getWalkedCustomers() {return walkedCustomers;}
-
-    public int getRevenue() {return revenueCents;}
-    public int getSatisfactionSum() {return satisfactionSum;}
 
     public void advanceTurn() {turn++;}
 
@@ -53,6 +45,12 @@ public class GameState {
 
     public void addPaidCustomer(Customer customer) {paidCustomers.add(customer);}
     public int getPaidCustomerCount() { return paidCustomers.size(); }
+
+    public void addReadyOrder(Order order) {
+
+    }
+
+
 
     public void addRevenue(int revenue) {revenueCents += revenue;}
 

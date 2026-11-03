@@ -152,7 +152,7 @@ public class CLI {
         }
     }
 
-    public WaiterAction promptWaiterAction(Queue<Customer> queue, List<Table> tables, List<Order> readyOrders) {
+    public WaiterAction promptWaiterAction(Queue<Customer> queue, List<Table> tables, List<Order> orders) {
         WaiterAction action = new WaiterAction(); 
         while (true) {
             String menu = """

@@ -8,96 +8,87 @@ public class GameController {
     private GameState gameState = new GameState();
     private CLI ui;
     private Menu menu;
-    private int turn;
-    private TurnResult tResult = new TurnResult();
-    private GameResult gResult;
+    private TurnResult turnResult;
+    private GameResult gameResult;
     private final int MAX_TURNS = 18;
-    private Queue<Customer> queue;
-    private List<Table> tables;
-    private List<Order> unreadyOrders;
-    private List<Order> readyOrders;
+
 
     public void run() {
         ui.start();
-        
-        for (int turn = 1; turn <= MAX_TURNS; turn++) {
+        for (int i = 1; i <= MAX_TURNS; i++) {
             playTurn();
         }
-        
-        ui.end(evaluateResult());
+        ui.end(evaluateResult(turnResult));
     }
 
     public void playTurn() {
-        processAddCustomer();
+        processSpawnCustomer();
 
         ui.displayTurnStart(gameState);
-        WaiterAction action = ui.promptWaiterAction(queue, tables, readyOrders);
-        Order order = ui.promptChefAction(unreadyOrders);
-        ui.promptCashierAction();
+        WaiterAction waiterAction = ui.promptWaiterAction(gameState.waitingQueue, gameState.tables, gameState.orders);
+        ChefAction chefAction = ui.promptChefAction(gameState.orders);
+        ui.promptCashierAction(gameState.tables);
 
-        processWaiter(action);
-        processChef(order);
+        processWaiter(waiterAction);
+        processChef(chefAction);
         processCashier();
         processEating();
         processWaiting();
 
-        ui.displayTurnEnd(tResult);
+        turnResult = new TurnResult(gameState);
+
+        ui.displayTurnEnd(turnResult);
     }
 
     private static final Set<Integer> SPAWN_TURNS = Set.of(1, 4, 7, 10, 13, 16);
 
-    private void processAddCustomer() {
-        if (SPAWN_TURNS.contains(turn)) {
-            queue.add(new RegularCustomer("NAME"));
+    private void processSpawnCustomer() {
+        if (SPAWN_TURNS.contains(gameState.turn)) {
+            gameState.addQueueCustomer(new RegularCustomer("NAME"));
         }
     }
 
-    private Table getFirstAvailableTable() {
+    private Table getFirstAvailableTable(List<Table> tables) {
         for (Table table : tables) {
             if (table.isFree()) {
                 return table;
             }
         }
-        return null; // All tables are currently full
+        return null;
     }
 
-    private void processWaiter(WaiterAction action) {
-        switch (action.getType()) {
+    private void processWaiter(WaiterAction waiterAction) {
+        switch (waiterAction.getType()) {
             case SEAT -> {
-                Table targetTable = getFirstAvailableTable();
+                Table targetTable = getFirstAvailableTable(gameState.tables);
                 if (targetTable != null) {
-                    seatCustomer(action.targetCustomer, targetTable);
-                } else {
-                    // Restaurant is full: handle overflow (e.g., add to queue, log, or ignore action)
-                    queueCustomer(action.targetCustomer);
+                    seatCustomer(waiterAction.targetCustomer, targetTable);
                 }
             }
             case TAKE_ORDER -> {
-                takeOrder(action.targetTable, menu);
+                takeOrder(waiterAction.targetTable, menu);
             }
             case SERVE -> {
-                serveOrder(action.targetOrder);
-                tResult.servedCount++;
+                serveOrder(waiterAction.targetOrder);
             }
-            case WAIT -> {
-                // Intentionally left blank: waiter is waiting
-            }
+            case WAIT -> {}
         }
     }
 
+    // i would like a ChefAction
     private void processChef(Order order) {
         advanceOrder(order);
     }
 
     private void processWaiting() {
         // 1. Process customers waiting in line
-        Iterator<Customer> iterator = queue.iterator();
+        Iterator<Customer> iterator = gameState.queue.iterator();
         while (iterator.hasNext()) {
             Customer customer = iterator.next();
             if (customer.getState() == CustomerState.WAITING) {
                 customer.loseSatisfaction();
                 if (customer.getSatisfaction() <= 0) {
-                    processLeave(customer); // Calls processLeave(Customer)
+                    processWalk(customer); // Calls processLeave(Customer)
                     iterator.remove();       // Safely removes from queue
                 }
             }
@@ -115,7 +106,7 @@ public class GameController {
                     
                     customer.loseSatisfaction();
                     if (customer.getSatisfaction() <= 0) {
-                        processLeave(table); // Calls processLeave(Table)
+                        processWalk(table); // Calls processLeave(Table)
                     }
                 }
             }
@@ -141,7 +132,7 @@ public class GameController {
                     // 1. Process payment / collect money
                     int money = collectPayment(customer);
                     gameState.addRevenue(money);
-                    tResult.revenueCents += money;
+                    turnResult.revenueCents += money;
 
                     table.free();
                     // 3. Stop after processing the first ready customer
@@ -151,32 +142,26 @@ public class GameController {
         }
     }
 
-        // Handles seated customers leaving
-    private void processLeave(Table table) {
-        tResult.unhappyDepartures++;
-        table.free();
-        // Add any table-departure logic (e.g., tResult.unhappyDepartures++)
-    }
-
-    // Handles queue customers leaving
-    private void processLeave(Customer customer) {
-        queue.remove(customer);
-        tResult.unhappyDepartures++;
+    private void processWalk(Customer customer) {
+        // if customer in table empty table
+        // if customer in queue leave queue
+        gameState.que.remove(customer);
+        gameState.addWalkedCustomer(customer);
     }
 
     private static final int MIN_SERVED_CUSTOMERS = 4;
-    private static final int MIN_REVENUE_CENTS = 4500; // $45.00
+    private static final int MIN_REVENUE_CENTS = 4500;
     private static final double MIN_AVERAGE_SATISFACTION = 60.0;
 
-    private GameResult evaluateResult(TurnResult tresult) {
-        boolean metCustomerGoal = tresult.getServedCount() >= MIN_SERVED_CUSTOMERS;
-        boolean metRevenueGoal = tresult.getRevenueCents() >= MIN_REVENUE_CENTS;
-        boolean metSatisfactionGoal = tresult.getAverageSatisfaction() >= MIN_AVERAGE_SATISFACTION;
+    private GameResult evaluateResult(TurnResult turnResult) {
+        boolean metCustomerGoal = turnResult.getPaidCustomerCount() >= MIN_SERVED_CUSTOMERS;
+        boolean metRevenueGoal = turnResult.getRevenue() >= MIN_REVENUE_CENTS;
+        boolean metSatisfactionGoal = turnResult.getAverageSatisfaction() >= MIN_AVERAGE_SATISFACTION;
 
         if (metCustomerGoal && metRevenueGoal && metSatisfactionGoal) {
             return GameResult.VICTORY;
+        } else {
+            return GameResult.DEFEAT;
         }
-        
-        return GameResult.DEFEAT; // Or your enum's equivalent loss state (e.g. LOSS, DEFEAT)
     }
 }
