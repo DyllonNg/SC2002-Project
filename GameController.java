@@ -48,20 +48,11 @@ public class GameController {
             gameState.addQueueCustomer(new RegularCustomer("NAME"));
         }
     }
-    
-    private Table getFirstAvailableTable() {
-        for (Table table : gameState.tables) {
-            if (table.isFree()) {
-                return table;
-            }
-        }
-        return null;
-    }
 
     private void processWaiter(WaiterAction waiterAction) {
         switch (waiterAction.getType()) {
             case SEAT -> {
-                Table targetTable = getFirstAvailableTable(gameState.tables);
+                Table targetTable = gameState.getFirstAvailableTable();
                 if (targetTable != null) {
                     seatCustomer(waiterAction.targetCustomer, targetTable);
                 }
@@ -75,10 +66,13 @@ public class GameController {
             case WAIT -> {}
         }
     }
-
     
     private void processChef(ChefAction chefAction) {
         // i would like a ChefAction
+    }
+
+    private void processCashier(CashierAction cashierAction) {
+        //i would like a CashierAction please
     }
 
     private void processWaiting() {
@@ -124,10 +118,6 @@ public class GameController {
                 }
             }
         }
-    }
-
-    private void processCashier(CashierAction cashierAction) {
-        //i would like a CashierAction please
     }
 
     private void processWalk(Customer customer) {

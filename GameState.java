@@ -39,6 +39,14 @@ public class GameState {
     public boolean removeTable(Table table) {return tables.remove(table);}
     public boolean removeTable(int tableId) {return tables.removeIf(table -> table.getTableId() == tableId);}
     public int getTableCount() {return tables.size();}
+    public Table getFirstAvailableTable() {
+        for (Table table : tables) {
+            if (table.isFree()) {
+                return table;
+            }
+        }
+        return null;
+    }
 
     public boolean addWalkedCustomer(Customer customer) {return walkedCustomers.add(customer);}
     public int getWalkedCustomerCount() {return walkedCustomers.size();}
