@@ -2,19 +2,24 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class GameController {
     
-    private GameState gameState = new GameState();
-    private CLI ui;
-    private Menu menu;
+    private final GameState gameState;
+    private final CLI ui;
+    private final Menu menu;
     private TurnResult turnResult;
-    private final int MAX_TURNS = 18;
+    private static final int MAX_TURNS = 18;
     private static final Set<Integer> SPAWN_TURNS = Set.of(1, 4, 7, 10, 13, 16);
     private static final int MIN_SERVED_CUSTOMERS = 4;
     private static final int MIN_REVENUE_CENTS = 4500;
     private static final double MIN_AVERAGE_SATISFACTION = 60.0;
+
+    public GameController() {
+        this.gameState = new GameState();
+        this.ui = new CLI();
+        this.menu = new Menu();
+    }
 
     public void run() {
         ui.start();

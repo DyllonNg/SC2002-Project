@@ -19,11 +19,12 @@ public class GameState {
     protected int satisfactionSum;
 
     public GameState() {
-        this.turn = 0;
+        this.turn = 1;
         this.waitingQueue = new ArrayDeque<>();
         this.tables = new ArrayList<>();
         this.paidCustomers = new ArrayList<>();
         this.walkedCustomers = new ArrayList<>();
+        this.orders = new ArrayList<>();
         this.revenueCents = 0;
         this.satisfactionSum = 0;
     }
