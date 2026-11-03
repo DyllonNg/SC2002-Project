@@ -195,7 +195,7 @@ public class CLI {
         }
     }    
 
-    public Order promptChefAction(List<Order> unreadyOrders) {
+    public ChefAction promptChefAction(List<Order> orders) {
         while (true) {
             String menu = """
                 =============================================
@@ -214,10 +214,10 @@ public class CLI {
                     return null; // 0 means do nothing, returning null
                     
                 case 1:
-                    // If they choose 1, show them the list of orders to pick from.
-                    // (If they change their mind here, your orderSelection method 
-                    // already has a "0: Return no one" option to back out safely!)
-                    return orderSelection(unreadyOrders);
+                    // make loop that filters the uncooked orders
+                    ChefAction chefAction = new ChefAction();
+                    //call orderselection() and make
+                    return chefAction;
                     
                 default:
                     System.out.println("Invalid selection. Please try again.");
