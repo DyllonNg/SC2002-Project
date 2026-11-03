@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameController {
@@ -9,9 +10,11 @@ public class GameController {
     private CLI ui;
     private Menu menu;
     private TurnResult turnResult;
-    private GameResult gameResult;
     private final int MAX_TURNS = 18;
-
+    private static final Set<Integer> SPAWN_TURNS = Set.of(1, 4, 7, 10, 13, 16);
+    private static final int MIN_SERVED_CUSTOMERS = 4;
+    private static final int MIN_REVENUE_CENTS = 4500;
+    private static final double MIN_AVERAGE_SATISFACTION = 60.0;
 
     public void run() {
         ui.start();
@@ -39,17 +42,15 @@ public class GameController {
 
         ui.displayTurnEnd(turnResult);
     }
-
-    private static final Set<Integer> SPAWN_TURNS = Set.of(1, 4, 7, 10, 13, 16);
-
+    
     private void processSpawnCustomer() {
         if (SPAWN_TURNS.contains(gameState.turn)) {
             gameState.addQueueCustomer(new RegularCustomer("NAME"));
         }
     }
-
-    private Table getFirstAvailableTable(List<Table> tables) {
-        for (Table table : tables) {
+    
+    private Table getFirstAvailableTable() {
+        for (Table table : gameState.tables) {
             if (table.isFree()) {
                 return table;
             }
@@ -75,38 +76,39 @@ public class GameController {
         }
     }
 
-    // i would like a ChefAction
-    private void processChef(Order order) {
-        advanceOrder(order);
+    
+    private void processChef(ChefAction chefAction) {
+        // i would like a ChefAction
     }
 
     private void processWaiting() {
-        // 1. Process customers waiting in line
-        Iterator<Customer> iterator = gameState.queue.iterator();
-        while (iterator.hasNext()) {
-            Customer customer = iterator.next();
-            if (customer.getState() == CustomerState.WAITING) {
-                customer.loseSatisfaction();
-                if (customer.getSatisfaction() <= 0) {
-                    processWalk(customer); // Calls processLeave(Customer)
-                    iterator.remove();       // Safely removes from queue
-                }
+        for (Customer customer : gameState.waitingQueue) {
+            customer.loseSatisfaction();
+        }
+
+        List<Customer> leaving = new ArrayList<>();
+
+        for (Customer customer : gameState.waitingQueue) {
+            if (customer.getSatisfaction() <= 0) {
+                leaving.add(customer);
             }
         }
 
-        // 2. Process customers sitting at tables
-        for (Table table : tables) {
-            if (table.isOccupied()) {
-                Customer customer = table.getCustomer();
-                CustomerState state = customer.getState();
+        for (Customer customer : leaving) {
+            gameState.removeQueueCustomer(customer);
+            processWalk(customer);
+        }
 
-                if (state == CustomerState.WAITING || 
-                    state == CustomerState.SEATED || 
-                    state == CustomerState.ORDERED) {
-                    
+        for (Table table : gameState.tables) {
+            if (!table.isFree()) {
+                Customer customer = table.getOccupant();
+                CustomerState customerState = customer.getState();
+
+                if (customerState == CustomerState.SEATED ||
+                    customerState == CustomerState.ORDERED) {
                     customer.loseSatisfaction();
                     if (customer.getSatisfaction() <= 0) {
-                        processWalk(table); // Calls processLeave(Table)
+                        processWalk(customer);
                     }
                 }
             }
@@ -114,9 +116,9 @@ public class GameController {
     }
 
     private void processEating() {
-        for (Table table : tables) {
-            if (table.isOccupied()) {
-                Customer customer = table.getCustomer();
+        for (Table table : gameState.tables) {
+            if (!table.isFree()) {
+                Customer customer = table.getOccupant();
                 if (customer.getState() == CustomerState.SERVED) {
                     customer.setState(CustomerState.READY_TO_PAY);
                 }
@@ -124,34 +126,25 @@ public class GameController {
         }
     }
 
-    private void processCashier() {
-        for (Table table : tables) {
-            if (table.isOccupied()) {
-                Customer customer = table.getCustomer();
-                if (customer.getState() == CustomerState.READY_TO_PAY) {
-                    // 1. Process payment / collect money
-                    int money = collectPayment(customer);
-                    gameState.addRevenue(money);
-                    turnResult.revenueCents += money;
-
-                    table.free();
-                    // 3. Stop after processing the first ready customer
-                    break;
-                }
-            }
-        }
+    private void processCashier(CashierAction cashierAction) {
+        //i would like a CashierAction please
     }
 
     private void processWalk(Customer customer) {
-        // if customer in table empty table
-        // if customer in queue leave queue
-        gameState.que.remove(customer);
+        customer.setState(CustomerState.ABANDONED);
+
+        Order order = customer.getOrder();
+        if (order != null) {
+            order.setState(OrderState.CANCELLED);
+        }
+
+        Table table = customer.getAssignedTable();
+        if (table != null) {
+            table.free();
+        }
+
         gameState.addWalkedCustomer(customer);
     }
-
-    private static final int MIN_SERVED_CUSTOMERS = 4;
-    private static final int MIN_REVENUE_CENTS = 4500;
-    private static final double MIN_AVERAGE_SATISFACTION = 60.0;
 
     private GameResult evaluateResult(TurnResult turnResult) {
         boolean metCustomerGoal = turnResult.getPaidCustomerCount() >= MIN_SERVED_CUSTOMERS;

@@ -46,11 +46,7 @@ public class GameState {
     public void addPaidCustomer(Customer customer) {paidCustomers.add(customer);}
     public int getPaidCustomerCount() { return paidCustomers.size(); }
 
-    public void addReadyOrder(Order order) {
-
-    }
-
-
+    public boolean addOrder(Order order) {return orders.add(order);}
 
     public void addRevenue(int revenue) {revenueCents += revenue;}
 
