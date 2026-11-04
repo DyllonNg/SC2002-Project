@@ -10,7 +10,7 @@ public class CLI {
     }
     
     public void start() {
-        String intro = """
+        String text = """
                 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                                 RESTAURANT RUSH                
                 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -25,37 +25,33 @@ public class CLI {
                 
                 Waiting customers lose satisfaction every turn, and leave if it hits zero.
                 """;
-        System.out.println(intro);
+        System.out.println(text);
         System.out.print("Press Enter to begin...");
         scanner.nextLine();
     }
 
-    public void displayTurnStart(GameState state) {
-        String header = """
+    public void displayTurnStart(TurnResult turnResult) {
+        String text = """
             =============================================
                             TURN %d                     
             =============================================
+            Customers in queue  : %d
+            Customers paid      : %d
+            Current tables      : %d
+            Customers walked    : %d
             Revenue             : $%d
             Average Satisfaction: %d
-            ---------------------------------------------
-            """.formatted(state.getTurn(), 
-                          state.getRevenue(), 
-                          state.getAverageSatisfaction());
-        System.out.println(header);
-
-        System.out.println("Customer Queue:");
-        Queue<Customer> queue = state.getWaitingQueue();
-        if (queue == null || queue.isEmpty()) {
-            System.out.println("(No customers waiting)");
-        } else {
-            int i = 1;
-            for (Customer customer : queue) {
-                String entry = "%d. %s [Satisfaction: %d]".formatted(i, customer.getName(), customer.getSatisfaction());
-                System.out.println(entry);
-                i++;
-            }
-        }
-        System.out.println("=============================================");
+            =============================================
+            """.formatted(turnResult.getTurn(),
+                          turnResult.getQueueCustomerCount(),
+                          turnResult.getPaidCustomerCount(),
+                          turnResult.getTableCount(),
+                          turnResult.walkedCustomerCount(),
+                          turnResult.getRevenue(), 
+                          turnResult.getAverageSatisfaction());
+        System.out.println(text);
+        System.out.print("Press Enter to continue...");
+        scanner.nextLine(); 
     }
 
     public Customer customerSelection(Queue<Customer> queue) {
@@ -155,7 +151,7 @@ public class CLI {
     public WaiterAction promptWaiterAction(Queue<Customer> queue, List<Table> tables, List<Order> orders) {
         WaiterAction action = new WaiterAction(); 
         while (true) {
-            String menu = """
+            String text = """
                     =============================================
                                 WAITER ACTION                  
                     =============================================
@@ -165,7 +161,7 @@ public class CLI {
                     0. Do nothing
                     ---------------------------------------------
                     Enter your choice (0-3): """;
-            System.out.print(menu);
+            System.out.print(text);
 
             int choice = scanner.nextInt();
 
@@ -185,7 +181,7 @@ public class CLI {
                     
                 case 3:
                     action.type = SERVE;
-                    action.targetOrder = orderSelection(readyOrders);
+                    action.targetOrder = orderSelection(orders);
                     return action;
                     
                 default:
@@ -197,7 +193,7 @@ public class CLI {
 
     public ChefAction promptChefAction(List<Order> orders) {
         while (true) {
-            String menu = """
+            String text = """
                 =============================================
                                 CHEF ACTION                  
                 =============================================
@@ -205,7 +201,7 @@ public class CLI {
                 0. Do nothing
                 ---------------------------------------------
                 Enter your choice (0-1): """;
-            System.out.print(menu);
+            System.out.print(text);
 
             int choice = scanner.nextInt();
             
@@ -242,14 +238,14 @@ public class CLI {
             : "(No customer ready to pay)";
 
         // 3. Print status banner
-        String menu = String.format("""
+        String text = String.format("""
             =============================================
                             CASHIER ACTION                 
             =============================================
             Paying for most recent customer %s
             ---------------------------------------------""", customerInfo);
 
-        System.out.println(menu);
+        System.out.println(text);
 
         // 4. Return action automatically based on availability
         if (readyTable != null) {
@@ -260,23 +256,25 @@ public class CLI {
     }
 
     public void displayTurnEnd(TurnResult turnResult) {
-        String summary = """
-                =============================================
-                            END OF TURN SUMMARY             
-                =============================================
-                Turns Used          : %d
-                Customers Served    : %d
-                Unhappy Departures  : %d
-                Revenue             : $%.2f
-                Average Satisfaction: %.1f
-                =============================================
-                """.formatted(turnResult.getTurnsUsed(),
-                              turnResult.getServedCount(),
-                              turnResult.getUnhappyDepartures(),
-                              turnResult.getRevenueCents() / 100.0,
-                              turnResult.getAverageSatisfaction());
-                
-        System.out.println(summary);
+        String text = """
+            =============================================
+                            TURN %d                     
+            =============================================
+            Customers in queue  : %d
+            Customers paid      : %d
+            Current tables      : %d
+            Customers walked    : %d
+            Revenue             : $%d
+            Average Satisfaction: %d
+            =============================================
+            """.formatted(turnResult.getTurn(),
+                          turnResult.getQueueCustomerCount(),
+                          turnResult.getPaidCustomerCount(),
+                          turnResult.getTableCount(),
+                          turnResult.walkedCustomerCount(),
+                          turnResult.getRevenue(), 
+                          turnResult.getAverageSatisfaction());
+        System.out.println(text);
         System.out.print("Press Enter to continue...");
         scanner.nextLine(); 
     }
@@ -290,7 +288,7 @@ public class CLI {
             message = "The restaurant closed. Better luck next time!";
         }
 
-        String summary = """
+        String text = """
                 =============================================
                                 GAME OVER                   
                 ---------------------------------------------
@@ -298,6 +296,6 @@ public class CLI {
                 =============================================
                 """.formatted(message);
                 
-        System.out.println(summary);
+        System.out.println(text);
     }
 }
