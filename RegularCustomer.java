@@ -1,3 +1,7 @@
+import java.util.List;
+import java.util.Random;
+
+// This is seperated from customer because it's kinda obvious that we're gonna add more types of customers since that's pretty much the easiest way to increase the difficulty.
 public class RegularCustomer extends Customer {
 
     public RegularCustomer(String name) {
@@ -5,7 +9,7 @@ public class RegularCustomer extends Customer {
     }
 
     @Override
-    public int getSatisfactionLoss() {
+    public int getSatisfactionLossPerTurn() {
         return 8; // Regular customers lose 8 satisfaction points
     }
 
@@ -15,5 +19,4 @@ public class RegularCustomer extends Customer {
         List<Dish> dishes = menu.getDishes();
         return dishes.get(rng.nextInt(dishes.size()));
     }
-
 }
