@@ -49,11 +49,11 @@ public abstract class Customer {
         this.assignedTable = t; 
     }
 
-    public abstract int getSatisfactionLoss();
+    public abstract int getSatisfactionLossPerTurn();
     
     public abstract Dish chooseDish(Menu menu, Random rng);
 
     public void loseSatisfaction() { 
-        setSatisfaction(satisfaction - getSatisfactionLoss()); 
+        setSatisfaction(satisfaction - getSatisfactionLossPerTurn());
     }
 }
