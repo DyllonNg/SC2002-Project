@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Waiter extends Staff {
     public Waiter(String name) {
         super(name);
@@ -16,15 +18,16 @@ public class Waiter extends Staff {
         }
 
         table.occupy(customer);
-        customer.assignTable(table);
-        customer.setState(CustomerState.SEATED);
         taskDone = true;
     }
 
-    public Order takeOrder(Customer customer, Menu menu) {
+    public Order takeOrder(Customer customer, Menu menu, Random rng) {
         checkAvailable();
         if (customer == null || menu == null) {
             throw new IllegalArgumentException("Choose a customer and a menu.");
+        }
+        if (rng == null) {
+            throw new IllegalArgumentException("Random generator cannot be null.");
         }
         if (customer.getState() != CustomerState.SEATED || customer.getOrder() != null) {
             throw new IllegalStateException("Customer cannot place an order now.");
@@ -33,7 +36,7 @@ public class Waiter extends Staff {
             throw new IllegalStateException("Customer must be seated at their table.");
         }
 
-        Dish dish = customer.chooseDish(menu);
+        Dish dish = customer.chooseDish(menu, rng);
         if (dish == null) {
             throw new IllegalStateException("Customer could not choose a dish.");
         }

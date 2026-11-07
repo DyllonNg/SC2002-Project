@@ -15,15 +15,14 @@ public class Cashier extends Staff {
                 || table == null || table.getOccupant() != customer) {
             throw new IllegalStateException("Customer is not ready to pay.");
         }
-        int billCents = customer.getBillCents();
+        int billCents = order.getLockedPriceCents();
         if (billCents < 0) {
             throw new IllegalStateException("Bill cannot be negative.");
         }
 
-        table.free();
-        customer.assignTable(null);
         order.setState(OrderState.PAID);
         customer.setState(CustomerState.PAID);
+        table.free();
         taskDone = true;
         return billCents;
     }
