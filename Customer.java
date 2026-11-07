@@ -41,7 +41,7 @@ public abstract class Customer {
         this.order = o; 
     }
 
-    public Table getAssignedTable() { 
+    public Table getTable() { 
         return assignedTable; 
     }
    
