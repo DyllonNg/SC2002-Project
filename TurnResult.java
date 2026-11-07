@@ -19,7 +19,9 @@ public class TurnResult {
         this.walkedCustomerCount = gameState.getWalkedCustomerCount();
 
         this.revenueCents = gameState.revenueCents;
-        this.averageSatisfaction = getAverageSatisfaction(gameState.satisfactionSum);
+        this.averageSatisfaction = (paidCustomerCount == 0)
+            ? 0.0
+            : (double) gameState.satisfactionSum / paidCustomerCount;
     }
 
     public int getTurn() {return turn;}
@@ -31,5 +33,4 @@ public class TurnResult {
     
     public int getRevenue() {return revenueCents;}
     public double getAverageSatisfaction() {return averageSatisfaction;}
-    public double getAverageSatisfaction(int satisfactionSum) {return (double) satisfactionSum / (paidCustomerCount + walkedCustomerCount);}
 }

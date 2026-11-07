@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Queue;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
@@ -29,17 +28,20 @@ public class GameState {
         this.satisfactionSum = 0;
     }
 
+    public int getTurn() {return turn;}
     public void advanceTurn() {turn++;}
 
     public boolean addQueueCustomer(Customer customer) {return waitingQueue.offer(customer);}
     public Customer removeQueueCustomer() {return waitingQueue.poll();}
     public boolean removeQueueCustomer(Customer customer) {return waitingQueue.remove(customer);}
     public int getQueueCustomerCount() {return waitingQueue.size();}
+    public List<Customer> getWaitingQueue() {return List.copyOf(waitingQueue);}
 
     public void addTable(Table table) {tables.add(table);}
     public boolean removeTable(Table table) {return tables.remove(table);}
     public boolean removeTable(int tableId) {return tables.removeIf(table -> table.getTableId() == tableId);}
     public int getTableCount() {return tables.size();}
+    public List<Table> getTables() {return List.copyOf(tables);}
     public Table getFirstAvailableTable() {
         for (Table table : tables) {
             if (table.isFree()) {
@@ -53,7 +55,7 @@ public class GameState {
     public int getWalkedCustomerCount() {return walkedCustomers.size();}
 
     public void addPaidCustomer(Customer customer) {paidCustomers.add(customer);}
-    public int getPaidCustomerCount() { return paidCustomers.size(); }
+    public int getPaidCustomerCount() {return paidCustomers.size();}
 
     public boolean addOrder(Order order) {return orders.add(order);}
 

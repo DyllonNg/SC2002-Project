@@ -1,125 +1,224 @@
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
-import java.util.ArrayList;
 
 public class GameController {
-    
+
+    private static final int MAX_TURNS = 18;
+    private static final int TABLE_COUNT = 2;
+    private static final Set<Integer> SPAWN_TURNS = Set.of(1, 4, 7, 10, 13, 16);
+    private static final int MIN_PAID_CUSTOMERS = 4;
+    private static final int MIN_REVENUE_CENTS = 4500;
+    private static final double MIN_AVERAGE_SATISFACTION = 60.0;
+
+    private static final long SEED = 42L;
+
     private final GameState gameState;
     private final CLI ui;
     private final Menu menu;
+    private final Random rng;
+
+    private final Waiter waiter;
+    private final Chef chef;
+    private final Cashier cashier;
+
+    private final Queue<Customer> readyToPay;
+
     private TurnResult turnResult;
-    private static final int MAX_TURNS = 18;
-    private static final Set<Integer> SPAWN_TURNS = Set.of(1, 4, 7, 10, 13, 16);
-    private static final int MIN_SERVED_CUSTOMERS = 4;
-    private static final int MIN_REVENUE_CENTS = 4500;
-    private static final double MIN_AVERAGE_SATISFACTION = 60.0;
 
     public GameController() {
         this.gameState = new GameState();
         this.ui = new CLI();
         this.menu = new Menu();
+        this.rng = new Random(SEED);
+
+        this.waiter = new Waiter("Waiter");
+        this.chef = new Chef("Chef");
+        this.cashier = new Cashier("Cashier");
+        this.readyToPay = new ArrayDeque<>();
+
+        for (int id = 1; id <= TABLE_COUNT; id++) {
+            gameState.addTable(new Table(id));
+        }
     }
 
     public void run() {
         ui.start();
-        for (int i = 1; i <= MAX_TURNS; i++) {
+        while (gameState.turn <= MAX_TURNS) {
             playTurn();
         }
-        ui.end(evaluateResult(turnResult));
+        ui.end(evaluateResult(turnResult)); // 6. Results
     }
 
     public void playTurn() {
-        processSpawnCustomer();
+        waiter.resetTurn();
+        chef.resetTurn();
+        cashier.resetTurn();
 
-        ui.displayTurnStart(gameState);
-        WaiterAction waiterAction = ui.promptWaiterAction(gameState.waitingQueue, gameState.tables, gameState.orders);
-        ChefAction chefAction = ui.promptChefAction(gameState.orders);
-        ui.promptCashierAction(gameState.tables);
+        List<Customer> finishedEating = customersInState(CustomerState.SERVED);
 
-        processWaiter(waiterAction);
-        processChef(chefAction);
-        processCashier();
-        processEating();
-        processWaiting();
+        processSpawnCustomer(); // 1. Arrivals
+        ui.displayTurnStart(gameState, new TurnResult(gameState), List.of(waiter, chef, cashier));
+
+        processWaiter(); // 2. Waiter
+        processChef(); // 3. Chef
+        processCashier(); // 4.1 Cashier
+        processEating(finishedEating); // 4.2 Eating
+        processWaiting(); // 5. Waiting
 
         turnResult = new TurnResult(gameState);
-
         ui.displayTurnEnd(turnResult);
+        gameState.advanceTurn();
     }
-    
+
+    // ===== ARRIVALS =====
     private void processSpawnCustomer() {
         if (SPAWN_TURNS.contains(gameState.turn)) {
-            gameState.addQueueCustomer(new RegularCustomer("NAME"));
+            Customer customer = new RegularCustomer("Customer " + gameState.turn);
+            gameState.addQueueCustomer(customer);
+            ui.displayMessage(customer.getName() + " joined the queue.");
         }
     }
 
-    private void processWaiter(WaiterAction waiterAction) {
-        switch (waiterAction.getType()) {
-            case SEAT -> {
-                Table targetTable = gameState.getFirstAvailableTable();
-                if (targetTable != null) {
-                    seatCustomer(waiterAction.targetCustomer, targetTable);
-                }
+    // ===== WAITER =====
+    private void processWaiter() {
+        while (waiter.canPerformTask()) {
+            WaiterAction action = ui.promptWaiterAction(
+                    gameState.waitingQueue, takeableTables(), serveableOrders());
+            if (action.getType() == WaiterActionType.WAIT) {
+                return;
             }
-            case TAKE_ORDER -> {
-                takeOrder(waiterAction.targetTable, menu);
+            try {
+                executeWaiterAction(action);
+            } catch (IllegalStateException | IllegalArgumentException e) {
+                ui.displayMessage("Cannot do that: " + e.getMessage());
             }
-            case SERVE -> {
-                serveOrder(waiterAction.targetOrder);
-            }
+        }
+    }
+
+    private void executeWaiterAction(WaiterAction action) {
+        switch (action.getType()) {
+            case SEAT -> seatCustomer(action.getCustomer());
+            case TAKE_ORDER -> takeOrder(action.getTable());
+            case SERVE -> serveOrder(action.getTargetOrder());
             case WAIT -> {}
         }
     }
-    
-    private void processChef(ChefAction chefAction) {
-        // i would like a ChefAction
-    }
 
-    private void processCashier(CashierAction cashierAction) {
-        //i would like a CashierAction please
-    }
-
-    private void processWaiting() {
-        for (Customer customer : gameState.waitingQueue) {
-            customer.loseSatisfaction();
+    private void seatCustomer(Customer customer) {
+        if (customer == null) {
+            throw new IllegalArgumentException("No customer was selected.");
         }
+        Table table = gameState.getFirstAvailableTable();
+        if (table == null) {
+            throw new IllegalStateException("There is no free table.");
+        }
+        waiter.seatCustomer(customer, table);
+        gameState.removeQueueCustomer(customer);
+        ui.displayMessage(customer.getName() + " was seated at table " + table.getTableId() + ".");
+    }
 
+    private void takeOrder(Table table) {
+        if (table == null) {
+            throw new IllegalArgumentException("No table was selected.");
+        }
+        Customer customer = table.getOccupant();
+        if (customer == null) {
+            throw new IllegalStateException("That table is empty.");
+        }
+        Order order = waiter.takeOrder(customer, menu, rng);
+        gameState.addOrder(order);
+        ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + ".");
+    }
+
+    private void serveOrder(Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("No order was selected.");
+        }
+        Customer customer = findCustomerByOrder(order);
+        if (customer == null) {
+            throw new IllegalStateException("No seated customer is waiting for that order.");
+        }
+        waiter.serveOrder(customer);
+        ui.displayMessage(customer.getName() + " was served " + order.getDish().getName() + ".");
+    }
+
+    // ===== CHEF =====
+    private void processChef() {
+        while (chef.canPerformTask()) {
+            Order order = ui.promptChefOrder(cookableOrders());
+            if (order == null) {
+                return;
+            }
+            try {
+                chef.advanceOrder(order);
+                String dish = order.getDish().getName();
+                if (order.isReady()) {
+                    ui.displayMessage(dish + " is READY.");
+                } else {
+                    ui.displayMessage(dish + " has " + order.getRemainingPrepUnits()
+                            + " preparation unit(s) left.");
+                }
+            } catch (IllegalStateException | IllegalArgumentException e) {
+                ui.displayMessage("Cannot do that: " + e.getMessage());
+            }
+        }
+    }
+
+    // ===== CASHIER =====
+    private void processCashier() {
+        Customer customer = readyToPay.peek();
+        if (customer == null || !cashier.canPerformTask()) {
+            return;
+        }
+        int billCents = cashier.collectPayment(customer);
+        readyToPay.poll();
+
+        gameState.addPaidCustomer(customer);
+        gameState.addRevenue(billCents);
+        gameState.addSatisfaction(customer.getSatisfaction());
+
+        ui.displayMessage(customer.getName() + " paid $"
+                + String.format("%.2f", billCents / 100.0) + ".");
+    }
+
+    // ===== EATING =====
+    private void processEating(List<Customer> finishedEating) {
+        for (Customer customer : finishedEating) {
+            customer.setState(CustomerState.READY_TO_PAY);
+            readyToPay.add(customer);
+            ui.displayMessage(customer.getName() + " finished eating and is ready to pay.");
+        }
+    }
+
+    // ===== WAITING =====
+    private void processWaiting() {
         List<Customer> leaving = new ArrayList<>();
 
         for (Customer customer : gameState.waitingQueue) {
+            customer.loseSatisfaction();
             if (customer.getSatisfaction() <= 0) {
                 leaving.add(customer);
             }
         }
-
         for (Customer customer : leaving) {
             gameState.removeQueueCustomer(customer);
             processWalk(customer);
         }
 
         for (Table table : gameState.tables) {
-            if (!table.isFree()) {
-                Customer customer = table.getOccupant();
-                CustomerState customerState = customer.getState();
-
-                if (customerState == CustomerState.SEATED ||
-                    customerState == CustomerState.ORDERED) {
-                    customer.loseSatisfaction();
-                    if (customer.getSatisfaction() <= 0) {
-                        processWalk(customer);
-                    }
-                }
+            Customer customer = table.getOccupant();
+            if (customer == null) {
+                continue;
             }
-        }
-    }
-
-    private void processEating() {
-        for (Table table : gameState.tables) {
-            if (!table.isFree()) {
-                Customer customer = table.getOccupant();
-                if (customer.getState() == CustomerState.SERVED) {
-                    customer.setState(CustomerState.READY_TO_PAY);
+            CustomerState state = customer.getState();
+            if (state == CustomerState.SEATED || state == CustomerState.ORDERED) {
+                customer.loseSatisfaction();
+                if (customer.getSatisfaction() <= 0) {
+                    processWalk(customer);
                 }
             }
         }
@@ -133,23 +232,80 @@ public class GameController {
             order.setState(OrderState.CANCELLED);
         }
 
-        Table table = customer.getAssignedTable();
+        Table table = customer.getTable();
         if (table != null) {
             table.free();
         }
 
         gameState.addWalkedCustomer(customer);
+        ui.displayMessage(customer.getName() + " lost patience and left.");
     }
 
-    private GameResult evaluateResult(TurnResult turnResult) {
-        boolean metCustomerGoal = turnResult.getPaidCustomerCount() >= MIN_SERVED_CUSTOMERS;
-        boolean metRevenueGoal = turnResult.getRevenue() >= MIN_REVENUE_CENTS;
-        boolean metSatisfactionGoal = turnResult.getAverageSatisfaction() >= MIN_AVERAGE_SATISFACTION;
+    // ===== END GAME =====
+    private GameResult evaluateResult(TurnResult result) {
+        boolean metCustomerGoal = result.getPaidCustomerCount() >= MIN_PAID_CUSTOMERS;
+        boolean metRevenueGoal = result.getRevenue() >= MIN_REVENUE_CENTS;
+        boolean metSatisfactionGoal = result.getPaidCustomerCount() > 0
+                && result.getAverageSatisfaction() >= MIN_AVERAGE_SATISFACTION;
 
-        if (metCustomerGoal && metRevenueGoal && metSatisfactionGoal) {
-            return GameResult.VICTORY;
-        } else {
-            return GameResult.DEFEAT;
+        return (metCustomerGoal && metRevenueGoal && metSatisfactionGoal)
+                ? GameResult.VICTORY
+                : GameResult.DEFEAT;
+    }
+
+    // ===== MISC CLI FUNCTIONS =====
+    private List<Customer> customersInState(CustomerState state) {
+        List<Customer> result = new ArrayList<>();
+        for (Table table : gameState.tables) {
+            Customer customer = table.getOccupant();
+            if (customer != null && customer.getState() == state) {
+                result.add(customer);
+            }
         }
+        return result;
+    }
+
+    private List<Table> takeableTables() {
+        List<Table> result = new ArrayList<>();
+        for (Table table : gameState.tables) {
+            Customer customer = table.getOccupant();
+            if (customer != null
+                    && customer.getState() == CustomerState.SEATED
+                    && customer.getOrder() == null) {
+                result.add(table);
+            }
+        }
+        return result;
+    }
+
+    private List<Order> serveableOrders() {
+        List<Order> result = new ArrayList<>();
+        for (Order order : gameState.orders) {
+            if (order.getState() == OrderState.READY) {
+                result.add(order);
+            }
+        }
+        return result;
+    }
+
+    private List<Order> cookableOrders() {
+        List<Order> result = new ArrayList<>();
+        for (Order order : gameState.orders) {
+            if (order.getState() == OrderState.PENDING
+                    || order.getState() == OrderState.PREPARING) {
+                result.add(order);
+            }
+        }
+        return result;
+    }
+
+    private Customer findCustomerByOrder(Order order) {
+        for (Table table : gameState.tables) {
+            Customer customer = table.getOccupant();
+            if (customer != null && customer.getOrder() == order) {
+                return customer;
+            }
+        }
+        return null;
     }
 }
