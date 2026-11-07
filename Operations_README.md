@@ -55,13 +55,8 @@ Order regularOrder = new Order(dish);
 
 Uses the dish's normal price. This is the constructor Stage 1 callers should use.
 
-```java
-Order explicitlyPricedOrder = new Order(dish, finalPriceCents);
-```
+The constructor starts the order as PENDING and initialise remaining preparation from the dish. Does not accpet a null dish.
 
-Stores an explicitly supplied nonnegative bill. This supports later integration with discounted pricing, but does not calculate discounts itself. Both constructors start the order as PENDING and initialise remaining preparation from the dish. Neither accepts a null dish.
-
-The bill is final and cannot change after construction. This allows later stages to lock discounted prices when orders are taken.
 
 ### Methods
 

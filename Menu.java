@@ -13,13 +13,13 @@ public class Menu {
                 new Dish("Pasta", 1800, 2)));
     }
 
-    /** Read-only view: callers cannot add, remove, or replace menu entries. */
+    /** The code below let's other code access the list*/
     public List<Dish> getDishes() { return dishes; }
 
     /** Case-insensitive lookup; returns null when no dish matches. */
     public Dish findDish(String name) {
         if (name == null) { return null; }
-        for (Dish dish : dishes) {
+        for (Dish dish : dishes) {  /** For each dish in the list of dishes, run this body once */
             if (dish.getName().equalsIgnoreCase(name.trim())) { return dish; }
         }
         return null;

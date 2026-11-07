@@ -16,10 +16,13 @@ public class Table {
 
     public void occupy(Customer customer) {
         Objects.requireNonNull(customer, "Customer must not be null.");
+
         if (!isFree()) { throw new IllegalStateException("Table is already occupied."); }
-        if (customer.getAssignedTable() != null || customer.getState() != CustomerState.WAITING) {
+
+        if (customer.getTable() != null || customer.getState() != CustomerState.WAITING) {
             throw new IllegalStateException("Only an unseated waiting customer can be seated.");
         }
+        
         occupant = customer;
         customer.assignTable(this);
         customer.setState(CustomerState.SEATED);

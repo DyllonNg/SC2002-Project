@@ -6,20 +6,16 @@ public class Order {
     private int remainingPrepUnits;
     private OrderState state;
     private final int lockedPriceCents;
-
+    
+    /** Constructor that constructs the price and does not accept null dishes
+    */
     public Order(Dish dish) {
-        this(dish, Objects.requireNonNull(dish, "Dish must not be null.").getPriceCents());
-    }
+    this.dish = Objects.requireNonNull(
+            dish, "Dish must not be null.");
 
-    /** Stage 1 callers normally use Order(dish), which locks the full menu price. */
-    public Order(Dish dish, int lockedPriceCents) {
-        this.dish = Objects.requireNonNull(dish, "Dish must not be null.");
-        if (lockedPriceCents < 0) {
-            throw new IllegalArgumentException("Locked price must not be negative.");
-        }
-        this.remainingPrepUnits = dish.getPrepUnits();
-        this.lockedPriceCents = lockedPriceCents;
-        this.state = OrderState.PENDING;
+    this.remainingPrepUnits = dish.getPrepUnits();
+    this.lockedPriceCents = dish.getPriceCents();
+    this.state = OrderState.PENDING;
     }
 
     public Dish getDish() { return dish; }
@@ -33,23 +29,31 @@ public class Order {
         if (state != OrderState.PENDING && state != OrderState.PREPARING) {
             throw new IllegalStateException("Only pending or preparing orders can be cooked.");
         }
-        remainingPrepUnits--;
-        state = remainingPrepUnits == 0 ? OrderState.READY : OrderState.PREPARING;
+        remainingPrepUnits = remainingPrepUnits - 1;
+
+        if (remainingPrepUnits == 0) {
+            state = OrderState.READY;
+        } else {
+            state = OrderState.PREPARING;
+        }
     }
 
     /**
-     * Retains the UML setter while rejecting invalid lifecycle changes.
      * PREPARING and READY are reached by advancePreparation(), never by skipping work.
-     * The controller must also check serving/payment turn eligibility.
+     * The controller must also check serving/payment turn eligibility ie:
+     * The method doesn’t know about turns. 
+     * The controller must prevent the Chef from calling it more than once per turn.
      */
     public void setState(OrderState next) {
         Objects.requireNonNull(next, "Order state must not be null.");
         if (next == state) { return; }
-        boolean serve = state == OrderState.READY && next == OrderState.SERVED;
-        boolean pay = state == OrderState.SERVED && next == OrderState.PAID;
+        boolean serve = state == OrderState.READY && next == OrderState.SERVED; //becomes yes when both conditions are satisfied
+        boolean pay = state == OrderState.SERVED && next == OrderState.PAID; //same thing here
         boolean cancel = next == OrderState.CANCELLED
                 && (state == OrderState.PENDING || state == OrderState.PREPARING
                     || state == OrderState.READY);
+       /** The above allows for a cancellation iff the current state is pending, ready or preparing.*/
+        
         if (!serve && !pay && !cancel) {
             throw new IllegalStateException("Invalid order transition: " + state + " -> " + next);
         }
