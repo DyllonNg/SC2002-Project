@@ -19,4 +19,9 @@ public class RegularCustomer extends Customer {
         List<Dish> dishes = menu.getDishes();
         return dishes.get(rng.nextInt(dishes.size()));
     }
+
+    @Override
+    public String getTypeName() {
+        return "Regular";
+    }
 }

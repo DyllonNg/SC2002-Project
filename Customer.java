@@ -56,4 +56,11 @@ public abstract class Customer {
     public void loseSatisfaction() { 
         setSatisfaction(satisfaction - getSatisfactionLossPerTurn());
     }
+
+    // This had to be added now that VIP gets a 10% off
+    public int calculateBill(Dish dish){
+        return dish.getPriceCents();
+    }
+
+    public abstract String getTypeName();
 }
