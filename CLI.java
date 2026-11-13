@@ -25,8 +25,12 @@ public class CLI {
                 2. Direct the chef (choose which order to cook)
                 The cashier collects one payment automatically each turn.
 
-                Waiting customers lose satisfaction every turn, and leave if it hits zero.
-                """;
+                Waiting customers lose satisfaction every turn, and leave if it hits zero. 
+                There are three types of customers:
+                - Regular: normal satisfaction loss, pays full price.   
+                - VIP: slower satisfaction loss, pays 10% less.
+                - Critic: faster satisfaction loss, pays full price, but always chooses the most expensive dish on the menu.
+                """; // Stage 2 new adds new Customer types, so the objective and description of the game has been updated to reflect this.
         System.out.println(text);
         System.out.print("Press Enter to begin...");
         scanner.nextLine();
@@ -48,9 +52,9 @@ public class CLI {
         if (queue.isEmpty()) {
             System.out.println("  (empty)");
         }
-        for (int i = 0; i < queue.size(); i++) {
+        for (int i = 0; i < queue.size(); i++) { // TODO: Also display the type of customer (Regular, VIP, or Critic) in the queue.
             Customer c = queue.get(i);
-            System.out.println("  " + (i + 1) + ". " + c.getName()
+            System.out.println("  " + (i + 1) + ". " + "(" + c.getTypeName() + ")" + " " + c.getName()
                     + " (satisfaction " + c.getSatisfaction() + ")");
         }
 
@@ -64,7 +68,7 @@ public class CLI {
             Order o = c.getOrder();
             String food = (o == null) ? "no order yet"
                     : o.getDish().getName() + " [" + o.getState() + "]";
-            System.out.println("  Table " + table.getTableId() + ": " + c.getName()
+            System.out.println("  Table " + table.getTableId() + ": " + "(" + c.getTypeName() + ")" + " " + c.getName()
                     + " | " + c.getState() + " | " + food
                     + " | satisfaction " + c.getSatisfaction());
         }
@@ -202,7 +206,7 @@ public class CLI {
         System.out.println("0: Back");
         for (int i = 0; i < customers.size(); i++) {
             Customer c = customers.get(i);
-            System.out.println((i + 1) + ": " + c.getName() + " (satisfaction " + c.getSatisfaction() + ")");
+            System.out.println((i + 1) + ": " + "(" + c.getTypeName() + ")" +" " + c.getName() + " (satisfaction " + c.getSatisfaction() + ")");
         }
 
         int choice = readInt("Enter your choice (0 to " + customers.size() + "): ", 0, customers.size());
@@ -220,7 +224,7 @@ public class CLI {
         for (int i = 0; i < tables.size(); i++) {
             Table t = tables.get(i);
             System.out.println((i + 1) + ": Table " + t.getTableId()
-                    + " (" + t.getOccupant().getName() + ")");
+                    + " (" + "(" + t.getOccupant().getTypeName() + ")" +" " + t.getOccupant().getName() + ")");
         }
 
         int choice = readInt("Enter your choice (0 to " + tables.size() + "): ", 0, tables.size());
