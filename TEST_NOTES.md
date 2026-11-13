@@ -1,6 +1,6 @@
 # Victory Run
-Customers 1, 4, 7, 10,  and 13 pay. Their orders are Pasta($18.00), Salad($9.00),  Salad($9.00), Pasta($18.00), and Salad($9.00). Customer 16 was seated and ordered a Burger, but was never served.
-Expected Result: Victory with 5 customers paid, $63.00 revenue, 0 unhappy departures, and average satisfaction 74.4.
+Customers 1, 4, 7, 10, and 13 pay. Their orders are Pasta($18.00), Salad($9.00),  Salad($9.00), Pasta($18.00), and Salad($9.00). Customer 16 was seated and ordered a Burger, but was never served.
+Expected Result: **Victory** with 6 customers served, $63.00 revenue, 0 unhappy departures, and average satisfaction 74.4.
 One invalid choice is shown at Turn 11, serving when no dish is READY. Shows the menu again without using up task.
 
 | Turn       | Waiter                      | Customer/Table/Order index | Chef     | Chef index | Enter (turn end) |
@@ -29,7 +29,7 @@ One invalid choice is shown at Turn 11, serving when no dish is READY. Shows the
 
 # Defeat Run
 The manager follows the script but stops making progress after Turn 13. Customers 1, 4, and 7 pay (3 customers, $36.00). Customer 10's Pasta is left at READY and never served. Customer 13 is seated but never orders. Customer 16 is never seated. The log shows intentional stray inputs on turns 11, 14, and 15 (typed during the `Press Enter to continue...` pause) which the program correctly ignores/re-prompts for without crashing.
-Expected Result: **DEFEAT** with 3 customers paid, $36.00 revenue, 0 unhappy departures, and average satisfaction 76.0.
+Expected Result: **Defeat** with 3 customers served, $36.00 revenue, 0 unhappy departures, and average satisfaction 76.0.
 
 | Turn  | Waiter    | Customer/Table/Order index | Chef                                      | Chef index | Enter (turn end)                      |
 | ----- | --------- | -------------------------- | ----------------------------------------- | ---------- | ------------------------------------- |
