@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 /** Owns preparation progress and a bill fixed at the moment of ordering. */
-public class Order {
+public class Order { 
     private final Dish dish;
     private int remainingPrepUnits;
     private OrderState state;
@@ -9,7 +9,7 @@ public class Order {
     
     /** Constructor that constructs the price and does not accept null dishes
     */
-    public Order(Dish dish) {
+    public Order(Dish dish) { // Maybe I can remove this constructor? The locked price is the same the usual for regular and critics so might as well use the other one.
     this.dish = Objects.requireNonNull(
             dish, "Dish must not be null.");
 
@@ -19,6 +19,17 @@ public class Order {
     }
 
     public Dish getDish() { return dish; }
+
+    public Order(Dish dish, int lockedPriceCents) {
+        this.dish = Objects.requireNonNull(dish, "Dish must not be null.");
+        if (lockedPriceCents < 0) {
+            throw new IllegalArgumentException("Locked price must not be negative.");
+        }
+        this.remainingPrepUnits = dish.getPrepUnits();
+        this.lockedPriceCents = lockedPriceCents;
+        this.state = OrderState.PENDING;
+    }
+
     public OrderState getState() { return state; }
     public int getRemainingPrepUnits() { return remainingPrepUnits; }
     public int getLockedPriceCents() { return lockedPriceCents; }
@@ -41,14 +52,14 @@ public class Order {
     /**
      * PREPARING and READY are reached by advancePreparation(), never by skipping work.
      * The controller must also check serving/payment turn eligibility ie:
-     * The method doesn’t know about turns. 
+     * The method doesn't know about turns. 
      * The controller must prevent the Chef from calling it more than once per turn.
      */
     public void setState(OrderState next) {
         Objects.requireNonNull(next, "Order state must not be null.");
         if (next == state) { return; }
         boolean serve = state == OrderState.READY && next == OrderState.SERVED; //becomes yes when both conditions are satisfied
-        boolean pay = state == OrderState.SERVED && next == OrderState.PAID; //same thing here
+        boolean pay = state == OrderState.SERVED && next == OrderState.PAID; //same thing here TODO: Check if the cancellation rule still applies with the locked price implementation.
         boolean cancel = next == OrderState.CANCELLED
                 && (state == OrderState.PENDING || state == OrderState.PREPARING
                     || state == OrderState.READY);
