@@ -91,7 +91,7 @@ public class CLI {
                 Turns used          : %d
                 =============================================
                 """.formatted(turnResult.getTurn(),
-                              turnResult.getPaidCustomerCount(),
+                              turnResult.getServedCustomerCount(),
                               turnResult.walkedCustomerCount(),
                               money(turnResult.getRevenue()),
                               average(turnResult),

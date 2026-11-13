@@ -4,6 +4,7 @@ public class TurnResult {
 
     private int queueCustomerCount;
     private int paidCustomerCount;
+    private int servedCustomerCount;
     private int tableCount;
     private int walkedCustomerCount;
 
@@ -15,6 +16,7 @@ public class TurnResult {
 
         this.queueCustomerCount = gameState.getQueueCustomerCount();
         this.paidCustomerCount = gameState.getPaidCustomerCount();
+        this.servedCustomerCount = gameState.getServedCustomerCount();
         this.tableCount = gameState.getTableCount();
         this.walkedCustomerCount = gameState.getWalkedCustomerCount();
 
@@ -28,6 +30,7 @@ public class TurnResult {
 
     public int getQueueCustomerCount() {return queueCustomerCount;}
     public int getPaidCustomerCount() {return paidCustomerCount;}
+    public int getServedCustomerCount() {return servedCustomerCount;}
     public int getTableCount() {return tableCount;}
     public int walkedCustomerCount() {return walkedCustomerCount;}
     
