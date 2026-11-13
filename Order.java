@@ -41,7 +41,7 @@ public class Order {
     /**
      * PREPARING and READY are reached by advancePreparation(), never by skipping work.
      * The controller must also check serving/payment turn eligibility ie:
-     * The method doesn’t know about turns. 
+     * The method doesn't know about turns. 
      * The controller must prevent the Chef from calling it more than once per turn.
      */
     public void setState(OrderState next) {
