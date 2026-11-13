@@ -40,7 +40,7 @@ public class Waiter extends Staff {
         if (dish == null) {
             throw new IllegalStateException("Customer could not choose a dish.");
         }
-        Order order = new Order(dish);
+        Order order = new Order(dish, customer.calculateBill(dish));
         customer.assignOrder(order);
         customer.setState(CustomerState.ORDERED);
         taskDone = true;
