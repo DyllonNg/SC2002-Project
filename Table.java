@@ -1,7 +1,6 @@
 import java.util.Objects;
 
 /** Keeps table occupancy and the customer's assigned-table reference consistent. */
-// Should be unchanged for Stage 2
 public class Table {
     private final int tableId;
     private Customer occupant;

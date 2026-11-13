@@ -3,7 +3,6 @@ import java.util.Collections;
 import java.util.List;
 
 /** The required Stage 1 menu, in a stable order for seeded customer choices. */
-// Should be unchanged for Stage 2
 public class Menu {
     private final List<Dish> dishes;
 

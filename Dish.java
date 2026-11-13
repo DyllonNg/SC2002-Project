@@ -1,5 +1,4 @@
 /** A menu dish. Prices are integer cents; preparation is measured in whole units. */
-// Should be unchanged for Stage 2
 public class Dish {
     private final String name;
     private final int priceCents;
