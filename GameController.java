@@ -3,13 +3,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.Map;
 
+// Set is no longer needed, so we delete the import.
 public class GameController {
 
     private static final int MAX_TURNS = 18;
     private static final int TABLE_COUNT = 2;
-    private static final Set<Integer> SPAWN_TURNS = Set.of(1, 4, 7, 10, 13, 16);
+    private static final Map<Integer, Function<String, Customer>> SPAWN_TURNS = Map.of( // These values now need to correspond to what type of customer spawned, Set might not be the best for this
+        1, RegularCustomer::new, 
+        4, VIPCustomer::new, 
+        7, RegularCustomer::new, 
+        10, CriticCustomer::new, 
+        13, RegularCustomer::new, 
+        16, RegularCustomer::new); 
     private static final int MIN_PAID_CUSTOMERS = 4;
     private static final int MIN_REVENUE_CENTS = 4500;
     private static final double MIN_AVERAGE_SATISFACTION = 60.0;
@@ -76,8 +84,9 @@ public class GameController {
 
     // ===== ARRIVALS =====
     private void processSpawnCustomer() {
-        if (SPAWN_TURNS.contains(gameState.turn)) {
-            Customer customer = new RegularCustomer("Customer " + gameState.turn);
+        Function<String, Customer> factory = SPAWN_TURNS.get(gameState.turn); // This is the new way to get the type of customer to spawn, using the Map instead of a Set
+        if (factory != null) { // Now that SPAWN_TURNS is a Map containing the type of customer to spawn, the if statement needs to be modifed
+            Customer customer = factory.apply("Customer " + gameState.turn);
             gameState.addQueueCustomer(customer);
             ui.displayMessage(customer.getName() + " joined the queue.");
         }
@@ -131,7 +140,8 @@ public class GameController {
         }
         Order order = waiter.takeOrder(customer, menu, rng);
         gameState.addOrder(order);
-        ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + ".");
+        ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + "($" + String.format("%.2f", order.getLockedPriceCents() / 100.0) + ")" + "."); // Maybe show the price of the dish? Mostly to make sure the VIP discount is applied correctly
+        // TODO: Find a way to conver the price from cents to dollars and cents. The helper in the CLI might need to be moved here or to dish, or use what processCashier is using.
     }
 
     private void serveOrder(Order order) {
@@ -183,7 +193,7 @@ public class GameController {
         gameState.addSatisfaction(customer.getSatisfaction());
 
         ui.displayMessage(customer.getName() + " paid $"
-                + String.format("%.2f", billCents / 100.0) + ".");
+                + String.format("%.2f", billCents / 100.0) + "."); // TODO: During run, ensure the payment for VIP reflects the 10% discount.
     }
 
     // ===== EATING =====
