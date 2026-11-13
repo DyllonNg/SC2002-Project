@@ -10,6 +10,7 @@ public class GameState {
     protected Queue<Customer> waitingQueue;
     protected List<Table> tables;
     protected List<Customer> paidCustomers;
+    protected List<Customer> servedCustomers;
     protected List<Customer> walkedCustomers;
 
     protected List<Order> orders;
@@ -22,6 +23,7 @@ public class GameState {
         this.waitingQueue = new ArrayDeque<>();
         this.tables = new ArrayList<>();
         this.paidCustomers = new ArrayList<>();
+        this.servedCustomers = new ArrayList<>();
         this.walkedCustomers = new ArrayList<>();
         this.orders = new ArrayList<>();
         this.revenueCents = 0;
@@ -56,6 +58,9 @@ public class GameState {
 
     public void addPaidCustomer(Customer customer) {paidCustomers.add(customer);}
     public int getPaidCustomerCount() {return paidCustomers.size();}
+
+    public void addServedCustomer(Customer c) { servedCustomers.add(c); }
+    public int getServedCustomerCount() { return servedCustomers.size(); }
 
     public boolean addOrder(Order order) {return orders.add(order);}
 
