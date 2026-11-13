@@ -59,7 +59,7 @@ public class GameState {
     public void addPaidCustomer(Customer customer) {paidCustomers.add(customer);}
     public int getPaidCustomerCount() {return paidCustomers.size();}
 
-    public void addServedCustomer(Customer c) { servedCustomers.add(c); }
+    public void addServedCustomer(Customer customer) { servedCustomers.add(customer); }
     public int getServedCustomerCount() { return servedCustomers.size(); }
 
     public boolean addOrder(Order order) {return orders.add(order);}
