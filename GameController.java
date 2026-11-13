@@ -143,6 +143,7 @@ public class GameController {
             throw new IllegalStateException("No seated customer is waiting for that order.");
         }
         waiter.serveOrder(customer);
+        gameState.addServedCustomer(customer);
         ui.displayMessage(customer.getName() + " was served " + order.getDish().getName() + ".");
     }
 
