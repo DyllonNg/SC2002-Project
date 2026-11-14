@@ -120,6 +120,18 @@ public class CLI {
     }
 
     // ===== STAFF METHODS =====
+    public boolean promptHappyHour() {
+        String text = """
+                =============================================
+                                MANAGER
+                =============================================
+                1. Activate Happy Hour
+                0. Not now
+                ---------------------------------------------""";
+        System.out.println(text);
+        return readInt("Enter your choice (0-1): ", 0, 1) == 1;
+    }
+    
     public Customer promptHostCustomer(Queue<Customer> queue) {
         while (true) {
             String text = """

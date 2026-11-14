@@ -33,6 +33,7 @@ public class GameController {
     private final Chef chef;
     private final Cashier cashier;
     private final Host host;
+    private final HappyHour happyHour;
 
     private final Queue<Customer> readyToPay;
 
@@ -48,6 +49,7 @@ public class GameController {
         this.chef = new Chef("Chef");
         this.cashier = new Cashier("Cashier");
         this.host = new Host("Host");
+        this.happyHour = new HappyHour();
         this.readyToPay = new ArrayDeque<>();
 
         for (int id = 1; id <= TABLE_COUNT; id++) {
@@ -72,6 +74,7 @@ public class GameController {
         List<Customer> finishedEating = customersInState(CustomerState.SERVED);
 
         processSpawnCustomer(); // 1. Arrivals
+        processHappyHour();
         ui.displayTurnStart(gameState, new TurnResult(gameState), List.of(host, waiter, chef, cashier));
 
         processHost();
@@ -80,6 +83,7 @@ public class GameController {
         processCashier(); // 4.1 Cashier
         processEating(finishedEating); // 4.2 Eating
         processWaiting(); // 5. Waiting
+        happyHour.advanceTurn();
 
         turnResult = new TurnResult(gameState);
         ui.displayTurnEnd(turnResult);
@@ -93,6 +97,32 @@ public class GameController {
             Customer customer = factory.apply("Customer " + gameState.turn);
             gameState.addQueueCustomer(customer);
             ui.displayMessage(customer.getName() + " joined the queue.");
+        }
+    }
+
+        // ===== HAPPY HOUR =====
+    private void processHappyHour() {
+        if (happyHour.isAvailable() && ui.promptHappyHour()) {
+            happyHour.activate();
+            ui.displayMessage("Happy Hour is now active!");
+        }
+        if (!happyHour.isActive()) {
+            return;
+        }
+
+        List<Customer> awaiting = new ArrayList<>(gameState.getWaitingQueue());
+        for (Table table : gameState.getTables()) {
+            if (table.getOccupant() != null) {
+                awaiting.add(table.getOccupant());
+            }
+        }
+        for (Customer customer : awaiting) {
+            if (customer.isAwaitingService()) {
+                int before = customer.getSatisfaction();
+                customer.recoverSatisfaction(happyHour.getSatisfactionBoost());
+                ui.displayMessage(customer.getName() + " recovered satisfaction ("
+                        + before + " -> " + customer.getSatisfaction() + ").");
+            }
         }
     }
 
