@@ -233,6 +233,11 @@ public class CLI {
         }
     }
 
+    public void displayOrderPlaced(Customer customer, Order order) {
+        System.out.println(customer.getName() + " ordered " + order.getDescription()
+                + " (" + money(order.getLockedPriceCents()) + ").");
+    }
+
     // ===== SELECTION METHODS =====
     public Customer customerSelection(Queue<Customer> queue) {
         if (queue == null || queue.isEmpty()) {
@@ -280,7 +285,7 @@ public class CLI {
         System.out.println("0: Back");
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
-            System.out.println((i + 1) + ": " + o.getDish().getName() + " [" + o.getState()
+            System.out.println((i + 1) + ": " + o.getDescription() + " [" + o.getState()
                     + ", " + o.getRemainingPrepUnits() + " unit(s) left]");
         }
 
