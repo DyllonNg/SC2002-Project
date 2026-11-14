@@ -238,6 +238,10 @@ public class CLI {
                 + " (" + money(order.getLockedPriceCents()) + ").");
     }
 
+    public void displayPayment(Customer customer, int billCents) {
+        System.out.println(customer.getName() + " paid " + money(billCents) + ".");
+    }
+
     // ===== SELECTION METHODS =====
     public Customer customerSelection(Queue<Customer> queue) {
         if (queue == null || queue.isEmpty()) {

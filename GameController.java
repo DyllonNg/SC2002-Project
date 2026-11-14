@@ -245,8 +245,7 @@ public class GameController {
         gameState.addRevenue(billCents);
         gameState.addSatisfaction(customer.getSatisfaction());
 
-        ui.displayMessage(customer.getName() + " paid $"
-                + String.format("%.2f", billCents / 100.0) + "."); // TODO: During run, ensure the payment for VIP reflects the 10% discount.
+        ui.displayPayment(customer, billCents);
     }
 
     // ===== EATING =====
