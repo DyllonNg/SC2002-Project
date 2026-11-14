@@ -298,7 +298,7 @@ public class CLI {
         System.out.println("0: Back");
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
-            System.out.println((i + 1) + ": " + o.getDish() + " [" + o.getState()
+            System.out.println((i + 1) + ": " + o.getDish().getName() + " [" + o.getState()
                     + ", " + o.getRemainingPrepUnits() + " unit(s) left]");
         }
 
