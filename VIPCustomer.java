@@ -15,8 +15,8 @@ public class VIPCustomer extends Customer {
 
     @Override
     public Dish chooseDish(Menu menu, Random rng) {
-        // VIP customers choose a random dish from the menu
-        List<Dish> dishes = menu.getDishes();
+        // VIP customers choose a random dish/combo from the menu
+        List<Dish> dishes = menu.getOrderableItems();
         return dishes.get(rng.nextInt(dishes.size()));
     }
 

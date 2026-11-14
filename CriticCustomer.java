@@ -14,6 +14,7 @@ public class CriticCustomer extends Customer {
     }
 
     // Critics chooses the most expensive dish from the menu
+    // Stage 3 added combo meals to the menu, CriticCustomer not affected.
     @Override
     public Dish chooseDish(Menu menu, Random rng) {
         List<Dish> dishes = menu.getDishes();

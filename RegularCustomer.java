@@ -15,8 +15,8 @@ public class RegularCustomer extends Customer {
 
     @Override
     public Dish chooseDish(Menu menu, Random rng) {
-        // Regular customers choose a random dish from the menu
-        List<Dish> dishes = menu.getDishes();
+        // Regular customers choose a random dish/combo from the menu
+        List<Dish> dishes = menu.getOrderableItems();
         return dishes.get(rng.nextInt(dishes.size()));
     }
 
