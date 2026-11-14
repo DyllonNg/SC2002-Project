@@ -79,6 +79,8 @@ public class CLI {
             System.out.println("  " + member.getName() + ": "
                     + (member.canPerformTask() ? "1 task available" : "task used"));
         }
+        System.out.println("---------------------------------------------");
+        System.out.println("HAPPY HOUR: " + happyHourStatus(gameState.getHappyHour()));
         System.out.println("=============================================");
     }
 
@@ -319,5 +321,12 @@ public class CLI {
 
     public void displayMessage(String message) {
         System.out.println(message);
+    }
+
+    private String happyHourStatus(HappyHour happyHour) {
+        if (happyHour.isActive()) {
+            return "ACTIVE (" + happyHour.getRemainingTurns() + " turns remaining)";
+        }
+        return happyHour.isAvailable() ? "available" : "used";
     }
 }
