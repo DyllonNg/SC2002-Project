@@ -194,7 +194,7 @@ public class GameController {
         }
         Order order = waiter.takeOrder(customer, menu, rng, gameState.happyHour);
         gameState.addOrder(order);
-        ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + "($" + String.format("%.2f", order.getLockedPriceCents() / 100.0) + ")" + ".");
+        ui.displayOrderPlaced(customer, order);
     }
 
     private void serveOrder(Order order) {
@@ -245,8 +245,7 @@ public class GameController {
         gameState.addRevenue(billCents);
         gameState.addSatisfaction(customer.getSatisfaction());
 
-        ui.displayMessage(customer.getName() + " paid $"
-                + String.format("%.2f", billCents / 100.0) + ".");
+        ui.displayPayment(customer, billCents);
     }
 
     // ===== EATING =====

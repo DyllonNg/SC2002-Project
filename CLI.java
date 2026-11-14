@@ -21,8 +21,10 @@ public class CLI {
                 - Average Satisfaction at least 60
 
                 Each turn you will:
-                1. Direct the waiter (seat, take order, serve, or wait)
-                2. Direct the chef (choose which order to cook)
+                1. Decide whether to activate Happy Hour (once per game)
+                2. Direct the host (seat a customer from the queue)
+                3. Direct the waiter (seat, take order, serve, or wait)
+                4. Direct the chef (choose which order to cook)
                 The cashier collects one payment automatically each turn.
 
                 Waiting customers lose satisfaction every turn, and leave if it hits zero. 
@@ -30,6 +32,12 @@ public class CLI {
                 - Regular: normal satisfaction loss, pays full price.   
                 - VIP: slower satisfaction loss, pays 10% less.
                 - Critic: faster satisfaction loss, pays full price, but always chooses the most expensive dish on the menu.
+                
+                Orders may be combos of several dishes (for example Salad + Pasta).
+                The chef must finish every dish in a combo before it is ready to serve.
+
+                Happy Hour: once per game, the manager can activate it. For 3 turns,
+                customers waiting for service recover 10 satisfaction at the start of each turn.
                 """; // Stage 2 new adds new Customer types, so the objective and description of the game has been updated to reflect this.
         System.out.println(text);
         System.out.print("Press Enter to begin...");
@@ -79,6 +87,8 @@ public class CLI {
             System.out.println("  " + member.getName() + ": "
                     + (member.canPerformTask() ? "1 task available" : "task used"));
         }
+        System.out.println("---------------------------------------------");
+        System.out.println("HAPPY HOUR: " + happyHourStatus(gameState.getHappyHour()));
         System.out.println("=============================================");
     }
 
@@ -231,6 +241,15 @@ public class CLI {
         }
     }
 
+    public void displayOrderPlaced(Customer customer, Order order) {
+        System.out.println(customer.getName() + " ordered " + order.getDescription()
+                + " (" + money(order.getLockedPriceCents()) + ").");
+    }
+
+    public void displayPayment(Customer customer, int billCents) {
+        System.out.println(customer.getName() + " paid " + money(billCents) + ".");
+    }
+
     // ===== SELECTION METHODS =====
     public Customer customerSelection(Queue<Customer> queue) {
         if (queue == null || queue.isEmpty()) {
@@ -278,7 +297,7 @@ public class CLI {
         System.out.println("0: Back");
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
-            System.out.println((i + 1) + ": " + o.getDish().getName() + " [" + o.getState()
+            System.out.println((i + 1) + ": " + o.getDescription() + " [" + o.getState()
                     + ", " + o.getRemainingPrepUnits() + " unit(s) left]");
         }
 
@@ -319,5 +338,12 @@ public class CLI {
 
     public void displayMessage(String message) {
         System.out.println(message);
+    }
+
+    private String happyHourStatus(HappyHour happyHour) {
+        if (happyHour.isActive()) {
+            return "ACTIVE (" + happyHour.getRemainingTurns() + " turns remaining)";
+        }
+        return happyHour.isAvailable() ? "available" : "used";
     }
 }
