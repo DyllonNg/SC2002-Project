@@ -36,7 +36,7 @@ public class CLI {
                 Orders may be combos of several dishes (for example Salad + Pasta).
                 The chef must finish every dish in a combo before it is ready to serve.
 
-                Happy Hour: Happy Hour: once per game, the manager can activate it. For 3 turns,
+                Happy Hour: once per game, the manager can activate it. For the current and next turn,
                 customers waiting for service recover 10 satisfaction at the start of each turn,
                 and orders placed during it cost 20% less.
                 """;
