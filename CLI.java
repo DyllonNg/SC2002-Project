@@ -132,7 +132,7 @@ public class CLI {
         return readInt("Enter your choice (0-1): ", 0, 1) == 1;
     }
     
-    public Customer promptHostCustomer(Queue<Customer> queue) {
+    public Customer promptHostAction(Queue<Customer> queue) {
         while (true) {
             String text = """
                     =============================================

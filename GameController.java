@@ -127,7 +127,7 @@ public class GameController {
     // ===== HOST =====
     private void processHost() {
         while (host.canPerformTask()) {
-            Customer customer = ui.promptHostCustomer(gameState.waitingQueue);
+            Customer customer = ui.promptHostAction(gameState.waitingQueue);
             if (customer == null) {
                 return;
             }
