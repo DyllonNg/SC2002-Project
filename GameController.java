@@ -281,8 +281,7 @@ public class GameController {
             if (customer == null) {
                 continue;
             }
-            CustomerState state = customer.getState();
-            if (state == CustomerState.SEATED || state == CustomerState.ORDERED) {
+            if (customer.isAwaitingService()) {
                 customer.loseSatisfaction();
                 if (customer.getSatisfaction() <= 0) {
                     processWalk(customer);
