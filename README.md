@@ -45,14 +45,15 @@ New files:
 
 Changed files:
 
-| File                 | Change                                                          | Reason                                                               |
-| -------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Customer.java        | `calculateBill(Dish)`, `getTypeName()`                          | Hooks for VIP pricing and type display                               |
-| RegularCustomer.java | `getTypeName()`                                                 | Returns "Regular"                                                    |
-| Waiter.java          | `new Order(dish, customer.calculateBill(dish))`                 | Locks the customer's own price into the order                        |
-| Order.java           | New constructor `public Order(Dish dish, int lockedPriceCents)` | Accepts modified pricing to account for VIPCustomer's price discount |
-| GameController.java  | `Map` spawn schedule                                            | Turn 4 → VIP, turn 10 → Critic, no type checks                       |
-| CLI.java             | displays `getTypeName()`                                        | Queue, tables and selection lists show the type                      |
+| File                 | Change                                                          | Reason                                                                      |
+| -------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Customer.java        | `calculateBill(Dish)`, `getTypeName()`                          | Hooks for VIP pricing and type display                                      |
+| RegularCustomer.java | `getTypeName()`                                                 | Returns "Regular"                                                           |
+| Waiter.java          | `new Order(dish, customer.calculateBill(dish))`                 | Locks the customer's own price into the order                               |
+| Order.java           | New constructor `public Order(Dish dish, int lockedPriceCents)` | Accepts modified pricing to account for VIPCustomer's price discount        |
+| GameController.java  | `Map` spawn schedule                                            | Turn 4 → VIP, turn 10 → Critic, no type checks                              |
+| CLI.java             | displays `getTypeName()`                                        | Queue, tables and selection lists show the type                             |
+| TEST_NOTES.md        | Appended Stage 2 runs                                           | Shows the VIP discount ($8.10) and Critic dish choice in a full playthrough |
 
 Unchanged:
 
