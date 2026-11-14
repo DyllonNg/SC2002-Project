@@ -90,8 +90,8 @@ public class GameController {
 
     // ===== ARRIVALS =====
     private void processSpawnCustomer() {
-        Function<String, Customer> factory = SPAWN_TURNS.get(gameState.turn); // This is the new way to get the type of customer to spawn, using the Map instead of a Set
-        if (factory != null) { // Now that SPAWN_TURNS is a Map containing the type of customer to spawn, the if statement needs to be modifed
+        Function<String, Customer> factory = SPAWN_TURNS.get(gameState.turn);
+        if (factory != null) {
             Customer customer = factory.apply("Customer " + gameState.turn);
             gameState.addQueueCustomer(customer);
             ui.displayMessage(customer.getName() + " joined the queue.");
@@ -100,7 +100,7 @@ public class GameController {
 
         // ===== HAPPY HOUR =====
     private void processHappyHour() {
-        if (gameState.happyHour.isAvailable() && ui.promptHappyHour(gameState.happyHour)) {
+        if (gameState.happyHour.isAvailable() && ui.promptHappyHour()) {
             gameState.happyHour.activate();
             ui.displayMessage("Happy Hour is now active!");
         }
