@@ -83,7 +83,7 @@ public class GameController {
         processCashier(); // 4.1 Cashier
         processEating(finishedEating); // 4.2 Eating
         processWaiting(); // 5. Waiting
-        happyHour.advanceTurn();
+        happyHour.endTurn();
 
         turnResult = new TurnResult(gameState);
         ui.displayTurnEnd(turnResult);
