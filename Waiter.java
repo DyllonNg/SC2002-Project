@@ -22,6 +22,10 @@ public class Waiter extends Staff {
     }
 
     public Order takeOrder(Customer customer, Menu menu, Random rng) {
+        return takeOrder(customer, menu, rng, false);
+    }
+
+    public Order takeOrder(Customer customer, Menu menu, Random rng, boolean happyHourActive) {
         checkAvailable();
         if (customer == null || menu == null) {
             throw new IllegalArgumentException("Choose a customer and a menu.");
@@ -40,7 +44,14 @@ public class Waiter extends Staff {
         if (dish == null) {
             throw new IllegalStateException("Customer could not choose a dish.");
         }
-        Order order = new Order(dish, customer.calculateBill(dish));
+        int billCents = customer.calculateBill(dish);
+        if (billCents < 0) {
+            throw new IllegalArgumentException("Bill cannot be negative.");
+        }
+        if (happyHourActive) {
+            billCents = (int) ((billCents * 80L + 50) / 100);
+        }
+        Order order = new Order(dish, billCents);
         customer.assignOrder(order);
         customer.setState(CustomerState.ORDERED);
         taskDone = true;
