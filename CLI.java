@@ -37,7 +37,7 @@ public class CLI {
                 The chef must finish every dish in a combo before it is ready to serve.
 
                 Happy Hour: once per game, the manager can activate it. For the current and next turn,
-                customers waiting for service recover 10 satisfaction at the start of each turn,
+                customers waiting for service recover 15 satisfaction at the start of each turn,
                 and orders placed during it cost 20% less.
                 """;
         System.out.println(text);
@@ -243,7 +243,7 @@ public class CLI {
     }
 
     public void displayOrderPlaced(Customer customer, Order order) {
-        System.out.println(customer.getName() + " ordered " + order.getDish()
+        System.out.println(customer.getName() + " ordered " + order.getDish().getName()
                 + " (" + money(order.getLockedPriceCents()) + ").");
     }
 
@@ -298,7 +298,7 @@ public class CLI {
         System.out.println("0: Back");
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
-            System.out.println((i + 1) + ": " + o.getDish() + " [" + o.getState()
+            System.out.println((i + 1) + ": " + o.getDish().getName() + " [" + o.getState()
                     + ", " + o.getRemainingPrepUnits() + " unit(s) left]");
         }
 
