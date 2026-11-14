@@ -140,8 +140,7 @@ public class GameController {
         }
         Order order = waiter.takeOrder(customer, menu, rng);
         gameState.addOrder(order);
-        ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + "($" + String.format("%.2f", order.getLockedPriceCents() / 100.0) + ")" + "."); // Maybe show the price of the dish? Mostly to make sure the VIP discount is applied correctly
-        // TODO: Find a way to conver the price from cents to dollars and cents. The helper in the CLI might need to be moved here or to dish, or use what processCashier is using.
+        ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + "($" + String.format("%.2f", order.getLockedPriceCents() / 100.0) + ")" + ".");
     }
 
     private void serveOrder(Order order) {
@@ -193,7 +192,7 @@ public class GameController {
         gameState.addSatisfaction(customer.getSatisfaction());
 
         ui.displayMessage(customer.getName() + " paid $"
-                + String.format("%.2f", billCents / 100.0) + "."); // TODO: During run, ensure the payment for VIP reflects the 10% discount.
+                + String.format("%.2f", billCents / 100.0) + ".");
     }
 
     // ===== EATING =====
