@@ -100,7 +100,7 @@ public class GameController {
 
         // ===== HAPPY HOUR =====
     private void processHappyHour() {
-        if (gameState.happyHour.isAvailable() && ui.promptHappyHour()) {
+        if (gameState.happyHour.isAvailable() && ui.promptHappyHour(gameState.happyHour)) {
             gameState.happyHour.activate();
             ui.displayMessage("Happy Hour is now active!");
         }

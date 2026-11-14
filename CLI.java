@@ -120,7 +120,7 @@ public class CLI {
     }
 
     // ===== STAFF METHODS =====
-    public boolean promptHappyHour() {
+    public boolean promptHappyHour(HappyHour happyHour) {
         String text = """
                 =============================================
                                 MANAGER
