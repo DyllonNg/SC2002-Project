@@ -32,6 +32,7 @@ public class GameController {
     private final Waiter waiter;
     private final Chef chef;
     private final Cashier cashier;
+    private final Host host;
 
     private final Queue<Customer> readyToPay;
 
@@ -46,6 +47,7 @@ public class GameController {
         this.waiter = new Waiter("Waiter");
         this.chef = new Chef("Chef");
         this.cashier = new Cashier("Cashier");
+        this.host = new Host("Host");
         this.readyToPay = new ArrayDeque<>();
 
         for (int id = 1; id <= TABLE_COUNT; id++) {
@@ -65,11 +67,12 @@ public class GameController {
         waiter.resetTurn();
         chef.resetTurn();
         cashier.resetTurn();
+        host.resetTurn();
 
         List<Customer> finishedEating = customersInState(CustomerState.SERVED);
 
         processSpawnCustomer(); // 1. Arrivals
-        ui.displayTurnStart(gameState, new TurnResult(gameState), List.of(waiter, chef, cashier));
+        ui.displayTurnStart(gameState, new TurnResult(gameState), List.of(host, waiter, chef, cashier));
 
         processWaiter(); // 2. Waiter
         processChef(); // 3. Chef
