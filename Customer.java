@@ -63,4 +63,21 @@ public abstract class Customer {
     }
 
     public abstract String getTypeName();
+
+    public void recoverSatisfaction(int points){
+        if(points < 0) { 
+            // Recovery must only add, negative value woud deduct instead
+            throw new IllegalArgumentException("Recovery points must not be negative");
+        }
+        setSatisfaction(satisfaction + points);
+    }
+
+    // Stage 3 added a scenario where customers waiting to be seated or for their food gain satisfaction during happy hour
+    // The states used for losing satisfaction and happy hour are the same, so it's better to have a method for processing them for easier modification
+    public boolean isAwaitingService(){
+        CustomerState s = getState();
+        return s == CustomerState.WAITING
+            || s == CustomerState.SEATED
+            || s == CustomerState.ORDERED;
+    }
 }
