@@ -33,7 +33,6 @@ public class GameController {
     private final Chef chef;
     private final Cashier cashier;
     private final Host host;
-    private final HappyHour happyHour;
 
     private final Queue<Customer> readyToPay;
 
@@ -49,7 +48,6 @@ public class GameController {
         this.chef = new Chef("Chef");
         this.cashier = new Cashier("Cashier");
         this.host = new Host("Host");
-        this.happyHour = new HappyHour();
         this.readyToPay = new ArrayDeque<>();
 
         for (int id = 1; id <= TABLE_COUNT; id++) {
@@ -83,7 +81,7 @@ public class GameController {
         processCashier(); // 4.1 Cashier
         processEating(finishedEating); // 4.2 Eating
         processWaiting(); // 5. Waiting
-        happyHour.endTurn();
+        gameState.happyHour.endTurn();
 
         turnResult = new TurnResult(gameState);
         ui.displayTurnEnd(turnResult);
@@ -102,11 +100,11 @@ public class GameController {
 
         // ===== HAPPY HOUR =====
     private void processHappyHour() {
-        if (happyHour.isAvailable() && ui.promptHappyHour()) {
-            happyHour.activate();
+        if (gameState.happyHour.isAvailable() && ui.promptHappyHour()) {
+            gameState.happyHour.activate();
             ui.displayMessage("Happy Hour is now active!");
         }
-        if (!happyHour.isActive()) {
+        if (!gameState.happyHour.isActive()) {
             return;
         }
 
@@ -119,7 +117,7 @@ public class GameController {
         for (Customer customer : awaiting) {
             if (customer.isAwaitingService()) {
                 int before = customer.getSatisfaction();
-                customer.recoverSatisfaction(happyHour.getSatisfactionBoost());
+                customer.recoverSatisfaction(gameState.happyHour.getSatisfactionBoost());
                 ui.displayMessage(customer.getName() + " recovered satisfaction ("
                         + before + " -> " + customer.getSatisfaction() + ").");
             }
@@ -194,7 +192,7 @@ public class GameController {
         if (customer == null) {
             throw new IllegalStateException("That table is empty.");
         }
-        Order order = waiter.takeOrder(customer, menu, rng, happyHour);
+        Order order = waiter.takeOrder(customer, menu, rng, gameState.happyHour);
         gameState.addOrder(order);
         ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + "($" + String.format("%.2f", order.getLockedPriceCents() / 100.0) + ")" + "."); // Maybe show the price of the dish? Mostly to make sure the VIP discount is applied correctly
         // TODO: Find a way to conver the price from cents to dollars and cents. The helper in the CLI might need to be moved here or to dish, or use what processCashier is using.
