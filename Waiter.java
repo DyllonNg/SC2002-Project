@@ -21,10 +21,6 @@ public class Waiter extends Staff {
         taskDone = true;
     }
 
-    public Order takeOrder(Customer customer, Menu menu, Random rng) {
-        return takeOrder(customer, menu, rng, null);
-    }
-
     public Order takeOrder(Customer customer, Menu menu, Random rng, HappyHour happyHour) {
         checkAvailable();
         if (customer == null || menu == null) {
@@ -44,10 +40,7 @@ public class Waiter extends Staff {
         if (dish == null) {
             throw new IllegalStateException("Customer could not choose a dish.");
         }
-        int billCents = customer.calculateBill(dish);
-        if (happyHour != null) {
-            billCents = happyHour.applyDiscount(billCents);
-        }
+        int billCents = happyHour.applyDiscount(customer.calculateBill(dish));
         Order order = new Order(dish, billCents);
         customer.assignOrder(order);
         customer.setState(CustomerState.ORDERED);
