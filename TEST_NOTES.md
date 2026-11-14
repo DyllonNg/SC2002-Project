@@ -1,7 +1,7 @@
 # Stage 1
 ## Victory Run
 Customers 1, 4, 7, 10, and 13 pay. Their orders are Pasta($18.00), Salad($9.00),  Salad($9.00), Pasta($18.00), and Salad($9.00). Customer 16 was seated and ordered a Burger, but was never served.
-Expected Result: **Victory** with 6 customers served, $63.00 revenue, 0 unhappy departures, and average satisfaction 74.4.
+Expected Result: **Victory** with 5 customers served, $63.00 revenue, 0 unhappy departures, and average satisfaction 74.4.
 One invalid choice is shown at Turn 11, serving when no dish is READY. Shows the menu again without using up task.
 
 | Turn       | Waiter                      | Customer/Table/Order index | Chef     | Chef index | Enter (turn end) |
