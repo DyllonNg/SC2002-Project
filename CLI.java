@@ -21,8 +21,10 @@ public class CLI {
                 - Average Satisfaction at least 60
 
                 Each turn you will:
-                1. Direct the waiter (seat, take order, serve, or wait)
-                2. Direct the chef (choose which order to cook)
+                1. Decide whether to activate Happy Hour (once per game)
+                2. Direct the host (seat a customer from the queue)
+                3. Direct the waiter (seat, take order, serve, or wait)
+                4. Direct the chef (choose which order to cook)
                 The cashier collects one payment automatically each turn.
 
                 Waiting customers lose satisfaction every turn, and leave if it hits zero. 
@@ -30,6 +32,12 @@ public class CLI {
                 - Regular: normal satisfaction loss, pays full price.   
                 - VIP: slower satisfaction loss, pays 10% less.
                 - Critic: faster satisfaction loss, pays full price, but always chooses the most expensive dish on the menu.
+                
+                Orders may be combos of several dishes (for example Salad + Pasta).
+                The chef must finish every dish in a combo before it is ready to serve.
+
+                Happy Hour: once per game, the manager can activate it. For 3 turns,
+                customers waiting for service recover 10 satisfaction at the start of each turn.
                 """; // Stage 2 new adds new Customer types, so the objective and description of the game has been updated to reflect this.
         System.out.println(text);
         System.out.print("Press Enter to begin...");
