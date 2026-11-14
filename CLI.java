@@ -27,18 +27,19 @@ public class CLI {
                 4. Direct the chef (choose which order to cook)
                 The cashier collects one payment automatically each turn.
 
-                Waiting customers lose satisfaction every turn, and leave if it hits zero. 
+                Waiting customers lose satisfaction every turn, and leave if it hits zero.
                 There are three types of customers:
-                - Regular: normal satisfaction loss, pays full price.   
+                - Regular: normal satisfaction loss, pays full price.
                 - VIP: slower satisfaction loss, pays 10% less.
                 - Critic: faster satisfaction loss, pays full price, but always chooses the most expensive dish on the menu.
                 
                 Orders may be combos of several dishes (for example Salad + Pasta).
                 The chef must finish every dish in a combo before it is ready to serve.
 
-                Happy Hour: once per game, the manager can activate it. For 3 turns,
-                customers waiting for service recover 10 satisfaction at the start of each turn.
-                """; // Stage 2 new adds new Customer types, so the objective and description of the game has been updated to reflect this.
+                Happy Hour: Happy Hour: once per game, the manager can activate it. For 3 turns,
+                customers waiting for service recover 10 satisfaction at the start of each turn,
+                and orders placed during it cost 20% less.
+                """;
         System.out.println(text);
         System.out.print("Press Enter to begin...");
         scanner.nextLine();
@@ -88,7 +89,7 @@ public class CLI {
                     + (member.canPerformTask() ? "1 task available" : "task used"));
         }
         System.out.println("---------------------------------------------");
-        System.out.println("HAPPY HOUR: " + happyHourStatus(gameState.getHappyHour()));
+        System.out.println("HAPPY HOUR: " + happyHourStatus(gameState.happyHour));
         System.out.println("=============================================");
     }
 
@@ -130,7 +131,7 @@ public class CLI {
     }
 
     // ===== STAFF METHODS =====
-    public boolean promptHappyHour(HappyHour happyHour) {
+    public boolean promptHappyHour() {
         String text = """
                 =============================================
                                 MANAGER
@@ -242,7 +243,7 @@ public class CLI {
     }
 
     public void displayOrderPlaced(Customer customer, Order order) {
-        System.out.println(customer.getName() + " ordered " + order.getDescription()
+        System.out.println(customer.getName() + " ordered " + order.getDish()
                 + " (" + money(order.getLockedPriceCents()) + ").");
     }
 
@@ -297,7 +298,7 @@ public class CLI {
         System.out.println("0: Back");
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
-            System.out.println((i + 1) + ": " + o.getDescription() + " [" + o.getState()
+            System.out.println((i + 1) + ": " + o.getDish() + " [" + o.getState()
                     + ", " + o.getRemainingPrepUnits() + " unit(s) left]");
         }
 
