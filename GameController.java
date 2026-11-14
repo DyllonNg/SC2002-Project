@@ -74,6 +74,7 @@ public class GameController {
         processSpawnCustomer(); // 1. Arrivals
         ui.displayTurnStart(gameState, new TurnResult(gameState), List.of(host, waiter, chef, cashier));
 
+        processHost();
         processWaiter(); // 2. Waiter
         processChef(); // 3. Chef
         processCashier(); // 4.1 Cashier
@@ -92,6 +93,28 @@ public class GameController {
             Customer customer = factory.apply("Customer " + gameState.turn);
             gameState.addQueueCustomer(customer);
             ui.displayMessage(customer.getName() + " joined the queue.");
+        }
+    }
+
+    // ===== HOST =====
+    private void processHost() {
+        while (host.canPerformTask()) {
+            Customer customer = ui.promptHostCustomer(gameState.waitingQueue);
+            if (customer == null) {
+                return;
+            }
+            try {
+                Table table = gameState.getFirstAvailableTable();
+                if (table == null) {
+                    throw new IllegalStateException("There is no free table.");
+                }
+                host.seatCustomer(customer, table);
+                gameState.removeQueueCustomer(customer);
+                ui.displayMessage(customer.getName() + " was seated at table "
+                        + table.getTableId() + " by the host.");
+            } catch (IllegalStateException | IllegalArgumentException e) {
+                ui.displayMessage("Cannot do that: " + e.getMessage());
+            }
         }
     }
 
