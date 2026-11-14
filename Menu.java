@@ -1,26 +1,43 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/** The required Stage 1 menu, in a stable order for seeded customer choices. */
-// Should be unchanged for Stage 2
+/** Stage 3 menu. Read-only lists have a fixed order for seeded customer choices. */
 public class Menu {
     private final List<Dish> dishes;
+    private final List<ComboMeal> combos;
+    private final List<Dish> orderableItems;
 
     public Menu() {
-        dishes = Collections.unmodifiableList(Arrays.asList(
-                new Dish("Salad", 900, 1),
-                new Dish("Burger", 1500, 1),
-                new Dish("Pasta", 1800, 2)));
+        Dish salad = new Dish("Salad", 900, 1);
+        Dish burger = new Dish("Burger", 1500, 1);
+        Dish pasta = new Dish("Pasta", 1800, 2);
+
+        dishes = Collections.unmodifiableList(Arrays.asList(salad, burger, pasta));
+        combos = Collections.unmodifiableList(Arrays.asList(
+                new ComboMeal(salad, pasta),
+                new ComboMeal(salad, burger)));
+
+        List<Dish> allItems = new ArrayList<>();
+        allItems.addAll(dishes);
+        allItems.addAll(combos);
+        orderableItems = Collections.unmodifiableList(allItems);
     }
 
-    /** The code below let's other code access the list*/
+    /** Read-only singles: Salad, Burger, Pasta. Preserves the Stage 2 API. */
     public List<Dish> getDishes() { return dishes; }
 
-    /** Case-insensitive lookup; returns null when no dish matches. */
+    /** Read-only combos: Salad + Pasta, then Salad + Burger. */
+    public List<ComboMeal> getCombos() { return combos; }
+
+    /** Read-only choices: the three singles followed by the two combos. */
+    public List<Dish> getOrderableItems() { return orderableItems; }
+
+    /** Searches singles and combos, ignoring case and surrounding spaces. */
     public Dish findDish(String name) {
         if (name == null) { return null; }
-        for (Dish dish : dishes) {  /** For each dish in the list of dishes, run this body once */
+        for (Dish dish : orderableItems) {
             if (dish.getName().equalsIgnoreCase(name.trim())) { return dish; }
         }
         return null;

@@ -59,7 +59,7 @@ public class Order {
         Objects.requireNonNull(next, "Order state must not be null.");
         if (next == state) { return; }
         boolean serve = state == OrderState.READY && next == OrderState.SERVED; //becomes yes when both conditions are satisfied
-        boolean pay = state == OrderState.SERVED && next == OrderState.PAID; //same thing here
+        boolean pay = state == OrderState.SERVED && next == OrderState.PAID;
         boolean cancel = next == OrderState.CANCELLED
                 && (state == OrderState.PENDING || state == OrderState.PREPARING
                     || state == OrderState.READY);
