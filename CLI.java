@@ -60,7 +60,7 @@ public class CLI {
         if (queue.isEmpty()) {
             System.out.println("  (empty)");
         }
-        for (int i = 0; i < queue.size(); i++) { // TODO: Also display the type of customer (Regular, VIP, or Critic) in the queue.
+        for (int i = 0; i < queue.size(); i++) {
             Customer c = queue.get(i);
             System.out.println("  " + (i + 1) + ". " + "(" + c.getTypeName() + ")" + " " + c.getName()
                     + " (satisfaction " + c.getSatisfaction() + ")");
