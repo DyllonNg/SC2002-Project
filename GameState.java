@@ -18,6 +18,8 @@ public class GameState {
     protected int revenueCents;
     protected int satisfactionSum;
 
+    protected HappyHour happyHour;
+
     public GameState() {
         this.turn = 1;
         this.waitingQueue = new ArrayDeque<>();
@@ -28,6 +30,7 @@ public class GameState {
         this.orders = new ArrayList<>();
         this.revenueCents = 0;
         this.satisfactionSum = 0;
+        this.happyHour = new HappyHour();
     }
 
     public int getTurn() {return turn;}
@@ -59,8 +62,8 @@ public class GameState {
     public void addPaidCustomer(Customer customer) {paidCustomers.add(customer);}
     public int getPaidCustomerCount() {return paidCustomers.size();}
 
-    public void addServedCustomer(Customer customer) { servedCustomers.add(customer); }
-    public int getServedCustomerCount() { return servedCustomers.size(); }
+    public void addServedCustomer(Customer customer) {servedCustomers.add(customer);}
+    public int getServedCustomerCount() {return servedCustomers.size();}
 
     public boolean addOrder(Order order) {return orders.add(order);}
 

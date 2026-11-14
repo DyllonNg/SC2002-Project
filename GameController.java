@@ -32,6 +32,7 @@ public class GameController {
     private final Waiter waiter;
     private final Chef chef;
     private final Cashier cashier;
+    private final Host host;
 
     private final Queue<Customer> readyToPay;
 
@@ -46,6 +47,7 @@ public class GameController {
         this.waiter = new Waiter("Waiter");
         this.chef = new Chef("Chef");
         this.cashier = new Cashier("Cashier");
+        this.host = new Host("Host");
         this.readyToPay = new ArrayDeque<>();
 
         for (int id = 1; id <= TABLE_COUNT; id++) {
@@ -65,17 +67,21 @@ public class GameController {
         waiter.resetTurn();
         chef.resetTurn();
         cashier.resetTurn();
+        host.resetTurn();
 
         List<Customer> finishedEating = customersInState(CustomerState.SERVED);
 
         processSpawnCustomer(); // 1. Arrivals
-        ui.displayTurnStart(gameState, new TurnResult(gameState), List.of(waiter, chef, cashier));
+        processHappyHour();
+        ui.displayTurnStart(gameState, new TurnResult(gameState), List.of(host, waiter, chef, cashier));
 
+        processHost();
         processWaiter(); // 2. Waiter
         processChef(); // 3. Chef
         processCashier(); // 4.1 Cashier
         processEating(finishedEating); // 4.2 Eating
         processWaiting(); // 5. Waiting
+        gameState.happyHour.endTurn();
 
         turnResult = new TurnResult(gameState);
         ui.displayTurnEnd(turnResult);
@@ -89,6 +95,54 @@ public class GameController {
             Customer customer = factory.apply("Customer " + gameState.turn);
             gameState.addQueueCustomer(customer);
             ui.displayMessage(customer.getName() + " joined the queue.");
+        }
+    }
+
+        // ===== HAPPY HOUR =====
+    private void processHappyHour() {
+        if (gameState.happyHour.isAvailable() && ui.promptHappyHour(gameState.happyHour)) {
+            gameState.happyHour.activate();
+            ui.displayMessage("Happy Hour is now active!");
+        }
+        if (!gameState.happyHour.isActive()) {
+            return;
+        }
+
+        List<Customer> awaiting = new ArrayList<>(gameState.getWaitingQueue());
+        for (Table table : gameState.getTables()) {
+            if (table.getOccupant() != null) {
+                awaiting.add(table.getOccupant());
+            }
+        }
+        for (Customer customer : awaiting) {
+            if (customer.isAwaitingService()) {
+                int before = customer.getSatisfaction();
+                customer.recoverSatisfaction(gameState.happyHour.getSatisfactionBoost());
+                ui.displayMessage(customer.getName() + " recovered satisfaction ("
+                        + before + " -> " + customer.getSatisfaction() + ").");
+            }
+        }
+    }
+
+    // ===== HOST =====
+    private void processHost() {
+        while (host.canPerformTask()) {
+            Customer customer = ui.promptHostAction(gameState.waitingQueue);
+            if (customer == null) {
+                return;
+            }
+            try {
+                Table table = gameState.getFirstAvailableTable();
+                if (table == null) {
+                    throw new IllegalStateException("There is no free table.");
+                }
+                host.seatCustomer(customer, table);
+                gameState.removeQueueCustomer(customer);
+                ui.displayMessage(customer.getName() + " was seated at table "
+                        + table.getTableId() + " by the host.");
+            } catch (IllegalStateException | IllegalArgumentException e) {
+                ui.displayMessage("Cannot do that: " + e.getMessage());
+            }
         }
     }
 
@@ -138,7 +192,7 @@ public class GameController {
         if (customer == null) {
             throw new IllegalStateException("That table is empty.");
         }
-        Order order = waiter.takeOrder(customer, menu, rng);
+        Order order = waiter.takeOrder(customer, menu, rng, gameState.happyHour);
         gameState.addOrder(order);
         ui.displayMessage(customer.getName() + " ordered " + order.getDish().getName() + "($" + String.format("%.2f", order.getLockedPriceCents() / 100.0) + ")" + ".");
     }
@@ -224,8 +278,7 @@ public class GameController {
             if (customer == null) {
                 continue;
             }
-            CustomerState state = customer.getState();
-            if (state == CustomerState.SEATED || state == CustomerState.ORDERED) {
+            if (customer.isAwaitingService()) {
                 customer.loseSatisfaction();
                 if (customer.getSatisfaction() <= 0) {
                     processWalk(customer);

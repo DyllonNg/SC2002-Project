@@ -120,6 +120,43 @@ public class CLI {
     }
 
     // ===== STAFF METHODS =====
+    public boolean promptHappyHour(HappyHour happyHour) {
+        String text = """
+                =============================================
+                                MANAGER
+                =============================================
+                1. Activate Happy Hour
+                0. Not now
+                ---------------------------------------------""";
+        System.out.println(text);
+        return readInt("Enter your choice (0-1): ", 0, 1) == 1;
+    }
+    
+    public Customer promptHostAction(Queue<Customer> queue) {
+        while (true) {
+            String text = """
+                    =============================================
+                                    HOST ACTION
+                    =============================================
+                    1. Seat a customer
+                    0. Do nothing
+                    ---------------------------------------------""";
+            System.out.println(text);
+            int choice = readInt("Enter your choice (0-1): ", 0, 1);
+
+            if (choice == 0) {
+                return null;
+            }
+            Customer customer = customerSelection(queue);
+            if (customer == null && (queue == null || queue.isEmpty())) {
+                return null; // nobody to seat, don't loop forever
+            }
+            if (customer != null) {
+                return customer;
+            }
+        }
+    }
+
     public WaiterAction promptWaiterAction(Queue<Customer> queue, List<Table> takeableTables, List<Order> serveableOrders) {
         WaiterAction action = new WaiterAction();
         while (true) {
