@@ -61,7 +61,7 @@ Unchanged:
 |---|---|
 | Dish, Menu, Table, OrderState, Cashier, Chef, Staff, GameState, TurnResult, GameResult, Main, WaiterAction, WaiterActionType, CustomerState | no Stage 2 impact |
 
-Compare: `stage-1...stage-2`
+Compare: `stage-1...stage-2
 
 ## Stage 2 → 3
 
@@ -95,4 +95,4 @@ Unchanged:
 |Dish, Order, OrderState, Table, Chef, Cashier, Staff, CustomerState, WaiterAction, WaiterActionType|no Stage 3 impact: a `ComboMeal` is a `Dish`, so ordering, cooking and payment work as before|
 |CriticCustomer, GameResult, Main|no Stage 3 impact (the Critic still orders the most expensive single dish)|
 
-Compare: `stage-2...stage-3`
+Compare: [`stage-2...stage-3`](https://github.com/DyllonNg/SC2002-Project/compare/Stage-2...Stage-3)
