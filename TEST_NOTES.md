@@ -115,3 +115,84 @@ Expected result: **DEFEAT** with 0 customers paid, $0.00 revenue, 2 unhappy depa
 | 17         | `0` wait                    | —                          | `0` wait | —          | `\n`             |
 | 18         | `0` wait                    | —                          | `0` wait | —          | `\n`             |
 | End        | —                           | —                          | —        | —          | `\n`             |
+
+# Stage 3
+## Victory Run
+
+Customers 1, 4, 7, 10 and 13 pay. Their orders are Salad ($9.00), Salad + Pasta ($21.87 VIP price, down from $24.30), Salad + Pasta ($24.30), Pasta ($18.00, the Critic's choice) and Salad + Burger ($21.60). Customer 16 is served on turn 18 but does not pay before the game ends.
+
+Happy Hour is activated at the start of turn 11 and remains active for turns 11 and 12. Customer 7 (Regular) is still waiting for food on turn 11, so they recover 15 satisfaction (68 -> 83). They are served on turn 11, so they do not recover on turn 12. Customer 10 (Critic) enters each active turn at 88 (having lost 12 points at the end of the previous turn), recovers 15, and is capped at 100. No order is placed while Happy Hour is active in this run, so the 20% discount is shown in the Defeat Run below.
+
+Expected result: **VICTORY** with 6 customers served, 5 customers paid, $94.77 revenue, 0 unhappy departures, and average satisfaction 84.8.
+
+Invalid choices shown:
+
+- Turn 12: Serving when no dish is READY prints "There are currently no orders to choose from."
+- Turn 13: The Host tries to seat a customer when both tables are occupied, prints "Cannot do that: There is no free table." Both re-prompt without consuming the staff task.
+
+|Turn|HH|Host|Host idx|Waiter|Waiter idx|Chef|Chef idx|Enter|
+|---|---|---|---|---|---|---|---|---|
+|Start|-|-|-|-|-|-|-|`\n`|
+|1|`0`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|2|`0`|`0` wait|-|`3` serve|`1`|`0` wait|-|`\n`|
+|3|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|4|`0`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|5|`0`|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
+|6|`0`|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
+|7|`0`|`1` seat|`1`|`3` serve|`1`|`0` wait|-|`\n`|
+|8|`0`|`0` wait|-|`2` take|`1`|`1` cook|`1`|`\n`|
+|9|`0`|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
+|10|`0`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|11|`1`|`0` wait|-|`3` serve|`1`|`1` cook|`1`|`\n`|
+|12|-|`0` wait|-|`3` serve (invalid)|-|-|-|-|
+|12 (retry)|-|-|-|`0` wait|-|`1` cook|`1`|`\n`|
+|13|-|`1` seat (invalid)|`1`|-|-|-|-|-|
+|13 (retry)|-|`0` wait|-|`3` serve|`1`|`1` cook (no orders)|-|`\n`|
+|14|-|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|15|-|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
+|16|-|`1` seat|`1`|`3` serve|`1`|`0` wait|-|`\n`|
+|17|-|`0` wait|-|`2` take|`1`|`1` cook|`1`|`\n`|
+|18|-|`0` wait|-|`3` serve|`1`|`0` wait|-|`\n`|
+|End|-|-|-|-|-|-|-|`\n`|
+
+Key Stage 3 behaviour visible in this run:
+
+- **Host:** Seats Customer 1 (T1), Customer 4 (T4), Customer 7 (T7), Customer 10 (T10), Customer 13 (T14) and Customer 16 (T16) in addition to the Waiter's tasks.
+- **Combos:** Regular and VIP customers order combos (Salad + Pasta and Salad + Burger). The Critic (Customer 10) correctly orders the most expensive single dish (Pasta). Salad + Pasta takes 3 preparation units.
+- **VIP Combo:** Customer 4's Salad + Pasta is charged $21.87 (10% off the $24.30 combo price).
+- **Happy Hour:** Activated on turn 11. While active, Customer 10 (Critic) loses 12 points at the end of turn 10 and turn 11, entering the start of turns 11 and 12 at satisfaction 88. The 15-point recovery caps them at 100, showing `(88 -> 100)` on both turns.
+- **Post-Happy-Hour order:** Customer 13's Salad + Burger (ordered on Turn 14) is charged full price ($21.60), because Happy Hour ended on Turn 12.
+- **Served vs Paid:** Customer 16 is served on Turn 18 but the game ends before they can pay. Thus, 6 customers are served, but only 5 pay.
+
+## Defeat Run
+
+Customer 1 is left in the queue until turn 4, when Customer 4 (VIP) has also arrived. On turn 4 the **Host seats Customer 1 and the Waiter seats Customer 4 in the same turn**, so both tables are filled at once and the Waiter can still seat customers.
+
+Happy Hour is activated at the start of turn 4 and stays active for turns 4 and 5. Customer 1 recovers 15 satisfaction on each of those turns (76 -> 91, then 83 -> 98). On turn 5, while Happy Hour is active, Customer 1's Salad is charged **$7.20** (20% off $9.00). On turn 6, after it has ended, Customer 4's Salad + Pasta is charged **$21.87** (the VIP price, with no Happy Hour discount).
+
+The Chef never cooks, so nobody is served or pays. Customer 1 leaves on turn 17 (their order is cancelled and the table is freed) and Customer 10 (Critic) leaves on turn 18. Customers 4, 7, 13 and 16 are still waiting at the end.
+
+Expected result: **DEFEAT** with 0 customers served, 0 customers paid, $0.00 revenue, 2 unhappy departures, and average satisfaction shown as N/A.
+
+|Turn|HH|Host|Host idx|Waiter|Waiter idx|Chef|Chef idx|Enter|
+|---|---|---|---|---|---|---|---|---|
+|Start|-|-|-|-|-|-|-|`\n`|
+|1|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|2|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|3|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|4|`1`|`1` seat|`1`|`1` seat|`1`|`0` wait|-|`\n`|
+|5|-|`0` wait|-|`2` take|`1`|`0` wait|-|`\n`|
+|6|-|`0` wait|-|`2` take|`1`|`0` wait|-|`\n`|
+|7|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|8|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|9|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|10|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|11|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|12|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|13|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|14|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|15|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|16|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|17|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|18|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|End|-|-|-|-|-|-|-|`\n`|
