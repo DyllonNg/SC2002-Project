@@ -61,7 +61,7 @@ Unchanged:
 |---|---|
 | Dish, Menu, Table, OrderState, Cashier, Chef, Staff, GameState, TurnResult, GameResult, Main, WaiterAction, WaiterActionType, CustomerState | no Stage 2 impact |
 
-Compare: [`stage-1...stage-2'](https://github.com/DyllonNg/SC2002-Project/compare/Stage-1...Stage-2)
+Compare: [`stage-1...stage-2`](https://github.com/DyllonNg/SC2002-Project/compare/Stage-1...Stage-2)
 
 ## Stage 2 → 3
 
