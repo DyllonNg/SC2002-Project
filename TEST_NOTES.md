@@ -123,12 +123,9 @@ Customers 1, 4, 7, 10 and 13 pay. Their orders are Salad ($9.00), Salad + Pasta 
 
 Happy Hour is activated at the start of turn 11 and remains active for turns 11 and 12. Customer 7 (Regular) is still waiting for food on turn 11, so they recover 15 satisfaction (68 -> 83). They are served on turn 11, so they do not recover on turn 12. Customer 10 (Critic) enters each active turn at 88 (having lost 12 points at the end of the previous turn), recovers 15, and is capped at 100. No order is placed while Happy Hour is active in this run, so the 20% discount is shown in the Defeat Run below.
 
-Expected result: **VICTORY** with 6 customers served, 5 customers paid, $94.77 revenue, 0 unhappy departures, and average satisfaction 84.8.
+Expected result: **VICTORY** with 6 customers served, 5 customers paid, $69.57 revenue, 0 unhappy departures, and average satisfaction 87.5.
 
-Invalid choices shown:
-
-- Turn 12: Serving when no dish is READY prints "There are currently no orders to choose from."
-- Turn 13: The Host tries to seat a customer when both tables are occupied, prints "Cannot do that: There is no free table." Both re-prompt without consuming the staff task.
+Invalid choices automatically reprompts the user.
 
 |Turn|HH|Host|Host idx|Waiter|Waiter idx|Chef|Chef idx|Enter|
 |---|---|---|---|---|---|---|---|---|
@@ -139,20 +136,18 @@ Invalid choices shown:
 |4|`0`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
 |5|`0`|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
 |6|`0`|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
-|7|`0`|`1` seat|`1`|`3` serve|`1`|`0` wait|-|`\n`|
-|8|`0`|`0` wait|-|`2` take|`1`|`1` cook|`1`|`\n`|
-|9|`0`|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
-|10|`0`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
-|11|`1`|`0` wait|-|`3` serve|`1`|`1` cook|`1`|`\n`|
-|12|-|`0` wait|-|`3` serve (invalid)|-|-|-|-|
-|12 (retry)|-|-|-|`0` wait|-|`1` cook|`1`|`\n`|
-|13|-|`1` seat (invalid)|`1`|-|-|-|-|-|
-|13 (retry)|-|`0` wait|-|`3` serve|`1`|`1` cook (no orders)|-|`\n`|
-|14|-|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
-|15|-|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
-|16|-|`1` seat|`1`|`3` serve|`1`|`0` wait|-|`\n`|
-|17|-|`0` wait|-|`2` take|`1`|`1` cook|`1`|`\n`|
-|18|-|`0` wait|-|`3` serve|`1`|`0` wait|-|`\n`|
+|7|`0`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|8|`0`|`1` seat|-|`3` serve|`1`|`1` cook|`1`|`\n`|
+|9|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|10|`0`|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
+|11|`1`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|12|-|`1` seat|-|`3` serve|`1`|`1` cook|`1`|`\n`|
+|13|-|`0` wait|-|`3` serve|`1`|`1` cook|-|`\n`|
+|14|-|`0` wait|-|`0` wait|-|`1` cook|-|`\n`|
+|15|-|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|16|-|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|17|-|`1` seat|-|`3` serve|`1`|`1` cook|`1`|`\n`|
+|18|-|`1` seat|-|`3` serve|`1`|`1` cook|-|`\n`|
 |End|-|-|-|-|-|-|-|`\n`|
 
 Key Stage 3 behaviour visible in this run:
@@ -166,26 +161,22 @@ Key Stage 3 behaviour visible in this run:
 
 ## Defeat Run
 
-Customer 1 is left in the queue until turn 4, when Customer 4 (VIP) has also arrived. On turn 4 the **Host seats Customer 1 and the Waiter seats Customer 4 in the same turn**, so both tables are filled at once and the Waiter can still seat customers.
+The restaurant plays optimally with the exception that happy hour is activated in turn 1. After turn 9, all the staff wait for the rest of the game.
 
-Happy Hour is activated at the start of turn 4 and stays active for turns 4 and 5. Customer 1 recovers 15 satisfaction on each of those turns (76 -> 91, then 83 -> 98). On turn 5, while Happy Hour is active, Customer 1's Salad is charged **$7.20** (20% off $9.00). On turn 6, after it has ended, Customer 4's Salad + Pasta is charged **$21.87** (the VIP price, with no Happy Hour discount).
-
-The Chef never cooks, so nobody is served or pays. Customer 1 leaves on turn 17 (their order is cancelled and the table is freed) and Customer 10 (Critic) leaves on turn 18. Customers 4, 7, 13 and 16 are still waiting at the end.
-
-Expected result: **DEFEAT** with 0 customers served, 0 customers paid, $0.00 revenue, 2 unhappy departures, and average satisfaction shown as N/A.
+Expected result: **DEFEAT** with 2 customers served, 2 customers paid, $29.07 revenue, 1 unhappy departures, and average satisfaction shown as 92.5.
 
 |Turn|HH|Host|Host idx|Waiter|Waiter idx|Chef|Chef idx|Enter|
 |---|---|---|---|---|---|---|---|---|
 |Start|-|-|-|-|-|-|-|`\n`|
-|1|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
-|2|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
-|3|`0`|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
-|4|`1`|`1` seat|`1`|`1` seat|`1`|`0` wait|-|`\n`|
-|5|-|`0` wait|-|`2` take|`1`|`0` wait|-|`\n`|
-|6|-|`0` wait|-|`2` take|`1`|`0` wait|-|`\n`|
-|7|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
-|8|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
-|9|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|1|`1`|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|2|-|`0` wait|-|`3` serve|`1`|`0` wait|-|`\n`|
+|3|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
+|4|-|`1` seat|`1`|`2` take|`1`|`1` cook|`1`|`\n`|
+|5|-|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
+|6|-|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
+|7|-|`1` seat|`1`|`3` serve|`1`|`1` cook|-|`\n`|
+|8|-|`0` wait|-|`2` take|`1`|`1` cook|`1`|`\n`|
+|9|-|`0` wait|-|`0` wait|-|`1` cook|`1`|`\n`|
 |10|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
 |11|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
 |12|-|`0` wait|-|`0` wait|-|`0` wait|-|`\n`|
