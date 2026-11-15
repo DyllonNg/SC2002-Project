@@ -61,7 +61,7 @@ Unchanged:
 |---|---|
 | Dish, Menu, Table, OrderState, Cashier, Chef, Staff, GameState, TurnResult, GameResult, Main, WaiterAction, WaiterActionType, CustomerState | no Stage 2 impact |
 
-Compare: [`stage-1...stage-2`](https://github.com/DyllonNg/SC2002-Project/compare/Stage-1...Stage-2)
+Compare: [`Stage-1...Stage-2`](https://github.com/DyllonNg/SC2002-Project/compare/Stage-1...Stage-2)
 
 ## Stage 2 → 3
 
@@ -75,24 +75,23 @@ New files:
 
 Changed files:
 
-|File|Change|Reason|
-|---|---|---|
-|Customer.java|`recoverSatisfaction(int)`, `isAwaitingService()`|Happy Hour recovery and the satisfaction loss share one "still waiting" rule|
-|RegularCustomer.java|`chooseDish` picks from `menu.getOrderableItems()`|Regular customers can now order combos|
-|VIPCustomer.java|`chooseDish` picks from `menu.getOrderableItems()`|VIP customers can now order combos (the 10% discount applies to the combo price)|
-|Menu.java|`getCombos()`, `getOrderableItems()`; `findDish` searches combos|Adds Salad + Pasta and Salad + Burger. `getDishes()` still returns only the three singles|
-|Waiter.java|`takeOrder` takes a `HappyHour`|Applies Happy Hour after the customer's own bill (VIP first, then Happy Hour) and locks it|
-|GameState.java|`happyHour` field, `addServedCustomer(...)`, `getServedCustomerCount()`|Holds the Happy Hour shared by the controller and display; counts customers served|
-|TurnResult.java|`getServedCustomerCount()`|End-of-turn screen shows customers served, not only customers paid|
-|GameController.java|Host step before the Waiter; Happy Hour prompt, recovery and `endTurn()`; Host in staff list|Turn order: arrivals, Happy Hour, display, Host, Waiter, Chef, Cashier, eating, waiting|
-|CLI.java|`promptHostAction`, `promptHappyHour`, Happy Hour status line, `displayOrderPlaced`, `displayPayment`|Host and Happy Hour choices, remaining duration display, money formatting kept in the UI|
-|TEST_NOTES.md|Appended Stage 3 runs|Victory run using the Host, combos and Happy Hour, and a defeat run|
+| File                 | Change                                                                                                | Reason                                                                                     |
+| -------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Customer.java        | `recoverSatisfaction(int)`, `isAwaitingService()`                                                     | Happy Hour recovery and the satisfaction loss share one "still waiting" rule               |
+| RegularCustomer.java | `chooseDish` picks from `menu.getOrderableItems()`                                                    | Regular customers can now order combos                                                     |
+| VIPCustomer.java     | `chooseDish` picks from `menu.getOrderableItems()`                                                    | VIP customers can now order combos (the 10% discount applies to the combo price)           |
+| Menu.java            | `getCombos()`, `getOrderableItems()`; `findDish` searches combos                                      | Adds Salad + Pasta and Salad + Burger. `getDishes()` still returns only the three singles  |
+| Waiter.java          | `takeOrder` takes a `HappyHour`                                                                       | Applies Happy Hour after the customer's own bill (VIP first, then Happy Hour) and locks it |
+| GameState.java       | `happyHour` field                                                                                     | Holds the Happy Hour shared by the controller                                              |
+| GameController.java  | Host step before the Waiter; Happy Hour prompt, recovery and `endTurn()`; Host in staff list          | Turn order: arrivals, Happy Hour, display, Host, Waiter, Chef, Cashier, eating, waiting    |
+| CLI.java             | `promptHostAction`, `promptHappyHour`, Happy Hour status line, `displayOrderPlaced`, `displayPayment` | Host and Happy Hour choices, remaining duration display, money formatting kept in the UI   |
+| TEST_NOTES.md        | Appended Stage 3 runs                                                                                 | Victory run using the Host, combos and Happy Hour, and a defeat run                        |
 
 Unchanged:
 
-|Files|Reason|
-|---|---|
-|Dish, Order, OrderState, Table, Chef, Cashier, Staff, CustomerState, WaiterAction, WaiterActionType|no Stage 3 impact: a `ComboMeal` is a `Dish`, so ordering, cooking and payment work as before|
-|CriticCustomer, GameResult, Main|no Stage 3 impact (the Critic still orders the most expensive single dish)|
+| Files                                                                                                           | Reason                                                                                        |
+| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Dish, Order, OrderState, Table, Chef, Cashier, Staff, CustomerState, WaiterAction, WaiterActionType, TurnResult | no Stage 3 impact: a `ComboMeal` is a `Dish`, so ordering, cooking and payment work as before |
+| CriticCustomer, GameResult, Main                                                                                | no Stage 3 impact (the Critic still orders the most expensive single dish)                    |
 
-Compare: [`stage-2...stage-3`](https://github.com/DyllonNg/SC2002-Project/compare/Stage-2...Stage-3)
+Compare: [`Stage-2...Stage-3`](https://github.com/DyllonNg/SC2002-Project/compare/Stage-2...Stage-3)
